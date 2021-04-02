@@ -17,19 +17,33 @@
           "${workspaceRoot}/src/index.ts"
         ]
 			},
-			{
+      {
         "type": "node",
         "request": "launch",
-        "name": "Mocha Tests",
-        "skipFiles": [
-            "<node_internals>/**"
-        ],
+        "name": "Tests",
+        "skipFiles": ["<node_internals>/**"],
         "cwd": "${workspaceRoot}",
         "args": [
-          "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-          "--timeout", "999999"
+          "-r", "ts-node/register",
+          "${workspaceRoot}/node_modules/jest/bin/jest",
+          "test/unit",
+          "--runInBand"
         ],
         "outputCapture": "std"
-			}
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Tests e2e",
+        "skipFiles": ["<node_internals>/**"],
+        "cwd": "${workspaceRoot}",
+        "args": [
+          "-r", "ts-node/register",
+          "${workspaceRoot}/node_modules/jest/bin/jest",
+          "test/e2e",
+          "--runInBand"
+        ],
+        "outputCapture": "std"
+      }
 	]
 }

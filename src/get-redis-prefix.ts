@@ -1,14 +1,12 @@
-import { RememberedRedisConfig } from './remembered-redis-config';
-
-export function getRedisPrefix(config: RememberedRedisConfig) {
-	let redisPrefix: string;
-	if (config.redixPrefix) {
-		redisPrefix = config.redixPrefix;
+export function getRedisPrefix(redisPrefix: string | undefined) {
+	let result: string;
+	if (redisPrefix) {
+		result = redisPrefix;
 		if (!redisPrefix.endsWith(':')) {
-			redisPrefix += ':';
+			result += ':';
 		}
 	} else {
-		redisPrefix = '';
+		result = '';
 	}
-	return redisPrefix;
+	return result;
 }
