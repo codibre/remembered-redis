@@ -1,6 +1,6 @@
 {
   "name": "@remembered/redis",
-  "description": "This project is just a template for creation of new projects",
+  "description": "A simple semaphore/cache lib using redis, extended from remembered package",
   "version": "0.0.0",
   "author": {
     "name": "Thiago O Santos <tos.oliveira@gmail.com>"
