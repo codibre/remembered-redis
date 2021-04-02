@@ -1,0 +1,99 @@
+{
+  "name": "boilerplate-base",
+  "description": "This project is just a template for creation of new projects",
+  "version": "0.0.0",
+  "private": true,
+  "author": {
+    "name": "Thiago O Santos <tos.oliveira@gmail.com>"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "doc": "npx typedoc",
+    "lint": "npm run lint:format && npm run lint:style",
+    "lint:fix": "npm run lint:format:fix && npm run lint:style:fix",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "jest test/unit",
+    "test:watch": "jest test/unit --watch",
+    "test:coverage": "jest test/unit --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest test/e2e",
+    "version": "scripts/prepare $npm_package_version && npm run doc && git add .",
+    "postversion": "git push && git push --tags",
+    "clear": "npm run clear:build && npm run clear:modules",
+    "clear:build": "del-cli ./dist",
+    "clear:modules": "del-cli ./node_modules",
+    "prebuild": "npm run clear:build && del-cli tsconfig.tsbuildinfo",
+    "preaction:verify:update-modules": "npm run action:verify:update-modules:check",
+    "action:verify:update-modules": "npm run action:verify:update-modules:reinstall && npm run action:verify:update-modules:clean",
+    "action:verify:update-modules:clean": "del-cli .check",
+    "lint:format": "prettier --check '{src,test}/**/*.ts'",
+    "lint:format:fix": "prettier --write '{src,test}/**/*.ts'",
+    "lint:style": "eslint '**/*.ts'",
+    "lint:style:fix": "eslint '**/*.ts' --fix",
+    "semantic-release": "semantic-release"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "preset": "ts-jest",
+    "coverageDirectory": "./coverage",
+    "collectCoverageFrom": [
+      "./src/**/*.ts"
+    ],
+    "testEnvironment": "node"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codibre/boilerplate-base.git"
+  },
+  "homepage": "https://github.com/codibre/boilerplate-base#readme",
+  "bugs": {
+    "url": "https://github.com/codibre/boilerplate-base/issues"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "devDependencies": {
+    "@codibre/confs": "1.0.1",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/npm": "^7.1.0",
+    "@semantic-release/release-notes-generator": "^9.0.2",
+    "@types/jest": "^26.0.22",
+    "@types/semantic-release": "^17.2.0",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.20.0",
+    "eslint": "^7.23.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-unused-imports": "^1.1.1",
+    "husky": "^6.0.0",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "semantic-release": "^17.4.2",
+    "ts-jest": "^26.5.4",
+    "ts-loader": "^8.1.0",
+    "ts-node": "^9.1.1",
+    "typedoc": "^0.20.34",
+    "typedoc-plugin-markdown": "^3.6.0",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@semantic-release/changelog": "^5.0.1"
+  }
+}
