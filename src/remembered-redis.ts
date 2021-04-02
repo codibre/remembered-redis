@@ -2,11 +2,13 @@ import { Remembered } from 'remembered';
 import { Redis } from 'ioredis';
 import { LockOptions, Semaphore } from 'redis-semaphore';
 import { LogError, RememberedRedisConfig } from './remembered-redis-config';
+import { getSemaphoreConfig } from './get-semaphore-config';
+import { getRedisPrefix } from './get-redis-prefix';
 
-const DEFAULT_LOCK_TIMEOUT = 10000;
-const DEFAULT_ACQUIRE_TIMEOUT = 60000;
-const DEFAULT_RETRY_INTERVAL = 100;
-const DEFAULT_REFRESH_INTERVAL = 8000;
+export const DEFAULT_LOCK_TIMEOUT = 10000;
+export const DEFAULT_ACQUIRE_TIMEOUT = 60000;
+export const DEFAULT_RETRY_INTERVAL = 100;
+export const DEFAULT_REFRESH_INTERVAL = 8000;
 const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
 
@@ -18,22 +20,10 @@ export class RememberedRedis extends Remembered {
 
 	constructor(config: RememberedRedisConfig, private readonly redis: Redis) {
 		super(config);
-		this.semaphoreConfig = {
-			lockTimeout: config.lockTimeout || DEFAULT_LOCK_TIMEOUT,
-			acquireTimeout: config.acquireTimeout || DEFAULT_ACQUIRE_TIMEOUT,
-			retryInterval: config.retryInterval || DEFAULT_RETRY_INTERVAL,
-			refreshInterval: config.refreshInterval || DEFAULT_REFRESH_INTERVAL,
-		};
 		this.redisTtl = config.redisTtl;
 		this.logError = config.logError;
-		if (config.redixPrefix) {
-			this.redisPrefix = config.redixPrefix;
-			if (!this.redisPrefix.endsWith(':')) {
-				this.redisPrefix += ':';
-			}
-		} else {
-			this.redisPrefix = '';
-		}
+		this.semaphoreConfig = getSemaphoreConfig(config);
+		this.redisPrefix = getRedisPrefix(config);
 	}
 
 	get<T>(key: string, callback: () => PromiseLike<T>): PromiseLike<T> {
