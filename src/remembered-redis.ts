@@ -39,7 +39,7 @@ export class RememberedRedis extends Remembered {
 			1,
 			this.semaphoreConfig,
 		);
-		await this.acquire(semaphore);
+		await this.tryTo(semaphore.acquire.bind(semaphore));
 		let saveCache = resolved;
 		try {
 			const result = await this.tryCache(key, callback);
@@ -48,7 +48,7 @@ export class RememberedRedis extends Remembered {
 			}
 			return result;
 		} finally {
-			saveCache.then(() => this.release(semaphore));
+			saveCache.then(() => this.tryTo(semaphore.release.bind(semaphore)));
 		}
 	}
 
@@ -65,17 +65,9 @@ export class RememberedRedis extends Remembered {
 		return result !== EMPTY ? result : callback();
 	}
 
-	private async release(semaphore: Semaphore) {
+	private async tryTo(action: () => PromiseLike<void>) {
 		try {
-			await semaphore.release();
-		} catch (err) {
-			this.logError?.(err.message);
-		}
-	}
-
-	private async acquire(semaphore: Semaphore) {
-		try {
-			await semaphore.acquire();
+			await action();
 		} catch (err) {
 			this.logError?.(err.message);
 		}
