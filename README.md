@@ -1,8 +1,8 @@
 [![Actions Status](https://github.com/Codibre/remembered-redis/workflows/build/badge.svg)](https://github.com/Codibre/remembered-redis/actions)
 [![Actions Status](https://github.com/Codibre/remembered-redis/workflows/test/badge.svg)](https://github.com/Codibre/remembered-redis/actions)
 [![Actions Status](https://github.com/Codibre/remembered-redis/workflows/lint/badge.svg)](https://github.com/Codibre/remembered-redis/actions)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/65e41e3018643f28168e/test_coverage)](https://codeclimate.com/github/Codibre/remembered-redis/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/65e41e3018643f28168e/maintainability)](https://codeclimate.com/github/Codibre/remembered-redis/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f11e39489f6b57ff1e9d/test_coverage)](https://codeclimate.com/github/Codibre/remembered-redis/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f11e39489f6b57ff1e9d/maintainability)](https://codeclimate.com/github/Codibre/remembered-redis/maintainability)
 [![Packages](https://david-dm.org/Codibre/remembered-redis.svg)](https://david-dm.org/Codibre/remembered-redis)
 [![npm version](https://badge.fury.io/js/%40remembered%2Fredis.svg)](https://badge.fury.io/js/%40remembered%2Fredis)
 
