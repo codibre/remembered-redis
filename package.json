@@ -1,5 +1,5 @@
 {
-  "name": "boilerplate-base",
+  "name": "@remembered/redis",
   "description": "This project is just a template for creation of new projects",
   "version": "0.0.0",
   "private": true,
@@ -60,11 +60,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/codibre/boilerplate-base.git"
+    "url": "https://github.com/codibre/@remembered/redis.git"
   },
-  "homepage": "https://github.com/codibre/boilerplate-base#readme",
+  "homepage": "https://github.com/codibre/@remembered/redis#readme",
   "bugs": {
-    "url": "https://github.com/codibre/boilerplate-base/issues"
+    "url": "https://github.com/codibre/@remembered/redis/issues"
   },
   "keywords": [],
   "license": "MIT",
@@ -74,6 +74,7 @@
     "@semantic-release/git": "^9.0.0",
     "@semantic-release/npm": "^7.1.0",
     "@semantic-release/release-notes-generator": "^9.0.2",
+    "@types/ioredis": "^4.22.2",
     "@types/jest": "^26.0.22",
     "@types/semantic-release": "^17.2.0",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
@@ -94,6 +95,9 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@semantic-release/changelog": "^5.0.1"
+    "@semantic-release/changelog": "^5.0.1",
+    "ioredis": "^4.24.6",
+    "redis-semaphore": "^4.1.0",
+    "remembered": "^0.3.0"
   }
 }
