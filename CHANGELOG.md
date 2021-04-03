@@ -1,4 +1,8 @@
 
+## 0.2.0
+* 05853dc fixing dependencies
+## v0.1.0
+* 9748875 0.1.0
 * 206ac01 filling readme
 * 8014684 fixing test
 * 54df7e5 creating unit tests
