@@ -1,6 +1,6 @@
+import './setup';
 import Redis = require('ioredis');
 import { RememberedRedis } from '../../src';
-import { expectCallsLike } from './setup';
 import { promisify } from 'util';
 import { v4 } from 'uuid';
 
@@ -40,7 +40,7 @@ describe('index.ts', () => {
 
 		const result = await target.get(key, callback);
 
-		expectCallsLike(callback, []);
+		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
 		expect(await redis.get(target['getRedisKey'](key))).toBe(
 			'"expected result"',
@@ -61,7 +61,7 @@ describe('index.ts', () => {
 
 		const result = await target0.get(key, callback);
 
-		expectCallsLike(callback, []);
+		expect(callback).toHaveCallsLike([], [], [], []);
 		expect(result).toBe('expected result');
 		expect(await redis.get(target['getRedisKey'](key))).toBe(
 			'"expected result"',
@@ -74,7 +74,7 @@ describe('index.ts', () => {
 
 		const result = await target.get(key, callback);
 
-		expectCallsLike(callback, []);
+		expect(callback).toHaveCallsLike([]);
 		expect(result).toBeUndefined();
 		expect(await redis.get(target['getRedisKey'](key))).toBe(null);
 	});
@@ -89,7 +89,7 @@ describe('index.ts', () => {
 		}
 		async function checkCalls() {
 			await delay(50);
-			expectCallsLike(callback);
+			expect(callback).toHaveCallsLike();
 		}
 
 		const [result] = await Promise.all([
@@ -98,7 +98,7 @@ describe('index.ts', () => {
 			checkCalls(),
 		]);
 
-		expectCallsLike(callback, []);
+		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
 		expect(await redis.get(target['getRedisKey'](key))).toBe(
 			'"expected result"',
@@ -117,7 +117,7 @@ describe('index.ts', () => {
 
 		const [result] = await Promise.all([target.get(key, callback), release()]);
 
-		expectCallsLike(callback);
+		expect(callback).toHaveCallsLike();
 		expect(result).toBe('cached result');
 		expect(await redis.get(target['getRedisKey'](key))).toBe('"cached result"');
 	});
@@ -134,7 +134,7 @@ describe('index.ts', () => {
 
 		const [result] = await Promise.all([target.get(key, callback), release()]);
 
-		expectCallsLike(callback);
+		expect(callback).toHaveCallsLike();
 		expect(result).toBe('cached result');
 		expect(await redis.get(target['getRedisKey'](key))).toBe('"cached result"');
 	});
