@@ -61,7 +61,7 @@ describe('index.ts', () => {
 
 		const result = await target0.get(key, callback);
 
-		expect(callback).toHaveCallsLike([], [], [], []);
+		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
 		expect(await redis.get(target['getRedisKey'](key))).toBe(
 			'"expected result"',

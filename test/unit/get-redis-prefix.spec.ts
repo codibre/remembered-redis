@@ -1,6 +1,6 @@
 import { LogError } from '../../src';
 import { tryToFactory } from '../../src/try-to-factory';
-import { expectCallsLike } from './setup';
+import './setup';
 
 describe(tryToFactory.name, () => {
 	let logError: LogError;
@@ -15,8 +15,8 @@ describe(tryToFactory.name, () => {
 
 		const result = await callback(action);
 
-		expectCallsLike(action, []);
-		expectCallsLike(logError);
+		expect(action).toHaveCallsLike([]);
+		expect(logError).toHaveCallsLike();
 		expect(result).toBeUndefined();
 	});
 
@@ -28,8 +28,8 @@ describe(tryToFactory.name, () => {
 
 		const result = await callback(action);
 
-		expectCallsLike(action, []);
-		expectCallsLike(logError, ['my error']);
+		expect(action).toHaveCallsLike([]);
+		expect(logError).toHaveCallsLike(['my error']);
 		expect(result).toBeUndefined();
 	});
 
@@ -41,7 +41,7 @@ describe(tryToFactory.name, () => {
 
 		const result = await callback(action);
 
-		expectCallsLike(action, []);
+		expect(action).toHaveCallsLike([]);
 		expect(result).toBeUndefined();
 	});
 });

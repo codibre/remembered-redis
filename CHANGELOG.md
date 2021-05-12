@@ -1,5 +1,7 @@
 
-## 0.2.0
+## 0.2.1
+* 8c649de fixing github url
+* fd6b195 fixing packagelock
 * 05853dc fixing dependencies
 ## v0.1.0
 * 9748875 0.1.0
