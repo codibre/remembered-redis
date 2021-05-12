@@ -59,11 +59,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/codibre/@remembered/redis.git"
+    "url": "https://github.com/codibre/remembered-redis.git"
   },
-  "homepage": "https://github.com/codibre/@remembered/redis#readme",
+  "homepage": "https://github.com/codibre/remembered-redis#readme",
   "bugs": {
-    "url": "https://github.com/codibre/@remembered/redis/issues"
+    "url": "https://github.com/codibre/remembered-redis/issues"
   },
   "keywords": [],
   "license": "MIT",
