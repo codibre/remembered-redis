@@ -27,19 +27,29 @@ export class RememberedRedis extends Remembered {
 		this.redisPrefix = getRedisPrefix(config.redisPrefix);
 	}
 
-	get<T>(key: string, callback: () => PromiseLike<T>): PromiseLike<T> {
-		return super.get(key, () =>
-			this.tryCache(key, () => this.getResult(key, callback)),
+	get<T>(
+		key: string,
+		callback: () => PromiseLike<T>,
+		noCacheIf?: (t: T) => boolean,
+	): PromiseLike<T> {
+		return super.get(
+			key,
+			() => this.tryCache(key, () => this.getResult(key, callback, noCacheIf)),
+			noCacheIf,
 		);
 	}
 
-	private async getResult<T>(key: string, callback: () => PromiseLike<T>) {
+	private async getResult<T>(
+		key: string,
+		callback: () => PromiseLike<T>,
+		noCacheIf?: (t: T) => boolean,
+	) {
 		const semaphore = this.getSemaphore(key);
 		await this.tryTo(semaphore.acquire.bind(semaphore));
 		let saveCache = resolved;
 		try {
 			const result = await this.tryCache(key, callback);
-			if (result) {
+			if (result !== undefined && !noCacheIf?.(result)) {
 				saveCache = this.saveToRedis<T>(key, result);
 			}
 			return result;

@@ -48,6 +48,29 @@ describe('index.ts', () => {
 		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
 	});
 
+	it('should acquire redis semaphore, fill redis cache with callback result, and release semaphore when noCacheIf returns false', async () => {
+		const callback = jest.fn().mockResolvedValue('expected result');
+
+		const result = await target.get(key, callback, () => false);
+
+		expect(callback).toHaveCallsLike([]);
+		expect(result).toBe('expected result');
+		expect(await redis.get(target['getRedisKey'](key))).toBe(
+			'"expected result"',
+		);
+		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
+	});
+
+	it('should acquire redis semaphore, do not fill redis cache with callback result, and release semaphore when noCacheIf returns true', async () => {
+		const callback = jest.fn().mockResolvedValue('expected result');
+
+		const result = await target.get(key, callback, () => true);
+
+		expect(callback).toHaveCallsLike([]);
+		expect(result).toBe('expected result');
+		expect(await redis.get(target['getRedisKey'](key))).toBe(null);
+	});
+
 	it('should acquire redis semaphore, fill redis cache with callback result with no ttl, and release semaphore when redisTtl is 0', async () => {
 		const callback = jest.fn().mockResolvedValue('expected result');
 		const target0 = new RememberedRedis(

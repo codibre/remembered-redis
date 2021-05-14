@@ -35,7 +35,8 @@
     "lint:format:fix": "prettier --write '{src,test}/**/*.ts'",
     "lint:style": "eslint '**/*.ts'",
     "lint:style:fix": "eslint '**/*.ts' --fix",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "prepare": "husky install"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -99,8 +100,8 @@
     "uuid": "^8.3.2"
   },
   "dependencies": {
-    "ioredis": "^4.24.6",
-    "redis-semaphore": "^4.1.0",
-    "remembered": "^0.3.0"
+    "ioredis": "*",
+    "redis-semaphore": "*",
+    "remembered": "*"
   }
 }
