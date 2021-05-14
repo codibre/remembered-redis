@@ -36,3 +36,4 @@ lerna-debug.log*
 .env
 .npmrc
 .scannerwork
+redis_data
