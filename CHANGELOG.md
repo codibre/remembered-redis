@@ -1,5 +1,9 @@
 
-## 0.2.1
+## 0.2.2
+* 6742736 removing unneeded files
+* 6719fec fixing redis
+* 589c196 preparing noCacheIf param
+* eb9f14d fixing tests
 * 8c649de fixing github url
 * fd6b195 fixing packagelock
 * 05853dc fixing dependencies
