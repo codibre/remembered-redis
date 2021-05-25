@@ -18,6 +18,7 @@ export class RememberedRedis extends Remembered {
 	private redisPrefix: string;
 	private redisTtl: number | undefined;
 	private tryTo: TryTo;
+	private onCache?: (key: string) => void;
 
 	constructor(config: RememberedRedisConfig, private readonly redis: Redis) {
 		super(config);
@@ -25,6 +26,7 @@ export class RememberedRedis extends Remembered {
 		this.tryTo = tryToFactory(config.logError);
 		this.semaphoreConfig = getSemaphoreConfig(config);
 		this.redisPrefix = getRedisPrefix(config.redisPrefix);
+		this.onCache = config.onCache;
 	}
 
 	get<T>(
@@ -77,7 +79,11 @@ export class RememberedRedis extends Remembered {
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
 		const result = await this.getFromRedis<T>(key);
-		return result !== EMPTY ? result : callback();
+		if (result !== EMPTY) {
+			this.onCache?.(key);
+			return result;
+		}
+		return callback();
 	}
 
 	private async getFromRedis<T>(key: string): Promise<T | typeof EMPTY> {
