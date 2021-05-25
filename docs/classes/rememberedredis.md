@@ -1,10 +1,10 @@
-[fluent-iterable - v0.1.0](../README.md) / RememberedRedis
+[fluent-iterable - v0.3.0](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
 ## Hierarchy
 
-* *Remembered*
+- *Remembered*
 
   ↳ **RememberedRedis**
 
@@ -16,6 +16,7 @@
 
 ### Properties
 
+- [onCache](rememberedredis.md#oncache)
 - [redisPrefix](rememberedredis.md#redisprefix)
 - [redisTtl](rememberedredis.md#redisttl)
 - [semaphoreConfig](rememberedredis.md#semaphoreconfig)
@@ -38,18 +39,36 @@
 
 \+ **new RememberedRedis**(`config`: [*RememberedRedisConfig*](../interfaces/rememberedredisconfig.md), `redis`: *Redis*): [*RememberedRedis*](rememberedredis.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`config` | [*RememberedRedisConfig*](../interfaces/rememberedredisconfig.md) |
-`redis` | *Redis* |
+| Name | Type |
+| :------ | :------ |
+| `config` | [*RememberedRedisConfig*](../interfaces/rememberedredisconfig.md) |
+| `redis` | *Redis* |
 
 **Returns:** [*RememberedRedis*](rememberedredis.md)
 
-Overrides: void
+Overrides: Remembered.constructor
 
 ## Properties
+
+### onCache
+
+• `Private` `Optional` **onCache**: (`key`: *string*) => *void*
+
+#### Type declaration
+
+▸ (`key`: *string*): *void*
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+
+**Returns:** *void*
+
+___
 
 ### redisPrefix
 
@@ -77,42 +96,43 @@ ___
 
 ### get
 
-▸ **get**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>): *PromiseLike*<T\>
+▸ **get**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>, `noCacheIf?`: (`t`: T) => *boolean*): *PromiseLike*<T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`callback` | () => *PromiseLike*<T\> |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `callback` | () => *PromiseLike*<T\> |
+| `noCacheIf?` | (`t`: T) => *boolean* |
 
 **Returns:** *PromiseLike*<T\>
 
-Overrides: void
+Overrides: Remembered.get
 
 ___
 
 ### getFromRedis
 
-▸ `Private`**getFromRedis**<T\>(`key`: *string*): *Promise*<*typeof* EMPTY \| T\>
+▸ `Private` **getFromRedis**<T\>(`key`: *string*): *Promise*<*typeof* EMPTY \| T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *Promise*<*typeof* EMPTY \| T\>
 
@@ -120,13 +140,13 @@ ___
 
 ### getRedisKey
 
-▸ `Private`**getRedisKey**(`key`: *string*): *string*
+▸ `Private` **getRedisKey**(`key`: *string*): *string*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *string*
 
@@ -134,20 +154,21 @@ ___
 
 ### getResult
 
-▸ `Private`**getResult**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>): *Promise*<T\>
+▸ `Private` **getResult**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>, `noCacheIf?`: (`t`: T) => *boolean*): *Promise*<T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`callback` | () => *PromiseLike*<T\> |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `callback` | () => *PromiseLike*<T\> |
+| `noCacheIf?` | (`t`: T) => *boolean* |
 
 **Returns:** *Promise*<T\>
 
@@ -155,13 +176,13 @@ ___
 
 ### getSemaphore
 
-▸ `Private`**getSemaphore**(`key`: *string*): *default*
+▸ `Private` **getSemaphore**(`key`: *string*): *default*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *default*
 
@@ -169,20 +190,20 @@ ___
 
 ### saveToRedis
 
-▸ `Private`**saveToRedis**<T\>(`key`: *string*, `result`: T): *Promise*<void\>
+▸ `Private` **saveToRedis**<T\>(`key`: *string*, `result`: T): *Promise*<void\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`result` | T |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `result` | T |
 
 **Returns:** *Promise*<void\>
 
@@ -190,20 +211,20 @@ ___
 
 ### tryCache
 
-▸ `Private`**tryCache**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>): *Promise*<T\>
+▸ `Private` **tryCache**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>): *Promise*<T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`callback` | () => *PromiseLike*<T\> |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `callback` | () => *PromiseLike*<T\> |
 
 **Returns:** *Promise*<T\>
 
@@ -211,23 +232,24 @@ ___
 
 ### wrap
 
-▸ **wrap**<T, K, R\>(`callback`: (...`args`: T) => R, `getKey`: (...`args`: K) => *string*): *function*
+▸ **wrap**<T, K, R\>(`callback`: (...`args`: T) => R, `getKey`: (...`args`: K) => *string*, `noCacheIf?`: (`result`: R *extends* *PromiseLike*<TR\> ? TR : *never*) => *boolean*): *function*
 
-#### Type parameters:
+#### Type parameters
 
-Name | Type |
-:------ | :------ |
-`T` | *any*[] |
-`K` | *any*[] |
-`R` | *PromiseLike*<any, R\> |
+| Name | Type |
+| :------ | :------ |
+| `T` | *any*[] |
+| `K` | *any*[] |
+| `R` | *PromiseLike*<any, R\> |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`callback` | (...`args`: T) => R |
-`getKey` | (...`args`: K) => *string* |
+| Name | Type |
+| :------ | :------ |
+| `callback` | (...`args`: T) => R |
+| `getKey` | (...`args`: K) => *string* |
+| `noCacheIf?` | (`result`: R *extends* *PromiseLike*<TR\> ? TR : *never*) => *boolean* |
 
 **Returns:** (...`args`: T) => R
 
-Inherited from: void
+Inherited from: Remembered.wrap

@@ -1,4 +1,4 @@
-[fluent-iterable - v0.1.0](../README.md) / RememberedRedisConfig
+[fluent-iterable - v0.3.0](../README.md) / RememberedRedisConfig
 
 # Interface: RememberedRedisConfig
 
@@ -9,6 +9,7 @@
 - [acquireTimeout](rememberedredisconfig.md#acquiretimeout)
 - [lockTimeout](rememberedredisconfig.md#locktimeout)
 - [logError](rememberedredisconfig.md#logerror)
+- [onCache](rememberedredisconfig.md#oncache)
 - [redisPrefix](rememberedredisconfig.md#redisprefix)
 - [redisTtl](rememberedredisconfig.md#redisttl)
 - [refreshInterval](rememberedredisconfig.md#refreshinterval)
@@ -32,6 +33,24 @@ ___
 ### logError
 
 • `Optional` **logError**: [*LogError*](../README.md#logerror)
+
+___
+
+### onCache
+
+• `Optional` **onCache**: (`key`: *string*) => *void*
+
+#### Type declaration
+
+▸ (`key`: *string*): *void*
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+
+**Returns:** *void*
 
 ___
 

@@ -1,5 +1,7 @@
 
-## 0.2.2
+## 0.3.0
+* 97ba2af adding onCache
+* 128dbbc adding prepublish only
 * 6742736 removing unneeded files
 * 6719fec fixing redis
 * 589c196 preparing noCacheIf param
