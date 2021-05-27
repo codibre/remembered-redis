@@ -1,6 +1,12 @@
-[fluent-iterable - v0.3.0](../README.md) / RememberedRedisConfig
+[fluent-iterable - v0.3.1](../README.md) / RememberedRedisConfig
 
 # Interface: RememberedRedisConfig
+
+## Hierarchy
+
+- *RememberedConfig*
+
+  ↳ **RememberedRedisConfig**
 
 ## Table of contents
 
@@ -10,6 +16,7 @@
 - [lockTimeout](rememberedredisconfig.md#locktimeout)
 - [logError](rememberedredisconfig.md#logerror)
 - [onCache](rememberedredisconfig.md#oncache)
+- [onReused](rememberedredisconfig.md#onreused)
 - [redisPrefix](rememberedredisconfig.md#redisprefix)
 - [redisTtl](rememberedredisconfig.md#redisttl)
 - [refreshInterval](rememberedredisconfig.md#refreshinterval)
@@ -54,6 +61,26 @@ ___
 
 ___
 
+### onReused
+
+• `Optional` **onReused**: (`key`: *string*) => *void*
+
+#### Type declaration
+
+▸ (`key`: *string*): *void*
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+
+**Returns:** *void*
+
+Inherited from: RememberedConfig.onReused
+
+___
+
 ### redisPrefix
 
 • `Optional` **redisPrefix**: *string*
@@ -81,3 +108,5 @@ ___
 ### ttl
 
 • **ttl**: *number*
+
+Overrides: RememberedConfig.ttl

@@ -1,7 +1,7 @@
 {
   "name": "@remembered/redis",
   "description": "A simple semaphore/cache lib using redis, extended from remembered package",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "Thiago O Santos <tos.oliveira@gmail.com>"
   },

@@ -1,5 +1,8 @@
 
-## 0.3.0
+## 0.3.1
+* d9cd4e0 fixing remembered dependency
+## v0.3.0
+* 63ab945 0.3.0
 * 97ba2af adding onCache
 * 128dbbc adding prepublish only
 * 6742736 removing unneeded files

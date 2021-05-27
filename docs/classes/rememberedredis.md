@@ -1,4 +1,4 @@
-[fluent-iterable - v0.3.0](../README.md) / RememberedRedis
+[fluent-iterable - v0.3.1](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
