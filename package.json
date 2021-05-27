@@ -103,6 +103,6 @@
   "dependencies": {
     "ioredis": "*",
     "redis-semaphore": "*",
-    "remembered": "*"
+    "remembered": ">=0.4.2"
   }
 }
