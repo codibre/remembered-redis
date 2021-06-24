@@ -1,5 +1,8 @@
 
-## 0.3.1
+## 0.4.0
+* 36a0839 adding gzipping to cache
+## v0.3.1
+* 02c21c1 0.3.1
 * d9cd4e0 fixing remembered dependency
 ## v0.3.0
 * 63ab945 0.3.0
