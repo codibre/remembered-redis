@@ -5,6 +5,7 @@ import { RememberedRedisConfig, TryTo } from './remembered-redis-config';
 import { getSemaphoreConfig } from './get-semaphore-config';
 import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
+import { valueSerializer } from './value-serializer';
 
 export const DEFAULT_LOCK_TIMEOUT = 10000;
 export const DEFAULT_ACQUIRE_TIMEOUT = 60000;
@@ -71,10 +72,10 @@ export class RememberedRedis extends Remembered {
 
 	private async saveToRedis<T>(key: string, result: T): Promise<void> {
 		const redisKey = this.getRedisKey(key);
-		const value = JSON.stringify(result);
+		const value = await valueSerializer.serialize(result);
 		await (this.redisTtl
-			? this.redis.setex(redisKey, this.redisTtl, value)
-			: this.redis.set(redisKey, value));
+			? this.redis.setex(redisKey, this.redisTtl, value as Buffer)
+			: this.redis.set(redisKey, value as Buffer));
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
@@ -87,8 +88,8 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private async getFromRedis<T>(key: string): Promise<T | typeof EMPTY> {
-		const cached = await this.redis.get(this.getRedisKey(key));
-		return cached ? JSON.parse(cached) : EMPTY;
+		const cached = await this.redis.getBuffer(this.getRedisKey(key));
+		return cached ? valueSerializer.deserialize(cached) : EMPTY;
 	}
 
 	private getRedisKey(key: string) {

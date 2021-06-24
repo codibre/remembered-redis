@@ -3,6 +3,7 @@ import Redis = require('ioredis');
 import { RememberedRedis } from '../../src';
 import { promisify } from 'util';
 import { v4 } from 'uuid';
+import { valueSerializer } from '../../src/value-serializer';
 
 const delay = promisify(setTimeout);
 
@@ -24,7 +25,7 @@ describe('index.ts', () => {
 		target = new RememberedRedis(
 			{
 				ttl: 1000,
-				redisTtl: 1,
+				redisTtl: 1000000,
 				redisPrefix: 'REMEMBERED',
 			},
 			redis,
@@ -39,11 +40,12 @@ describe('index.ts', () => {
 		const callback = jest.fn().mockResolvedValue('expected result');
 
 		const result = await target.get(key, callback);
+		await delay(10);
 
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
-		expect(await redis.get(target['getRedisKey'](key))).toBe(
-			'"expected result"',
+		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
+			await valueSerializer.serialize('expected result'),
 		);
 		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
 	});
@@ -52,11 +54,12 @@ describe('index.ts', () => {
 		const callback = jest.fn().mockResolvedValue('expected result');
 
 		const result = await target.get(key, callback, () => false);
+		await delay(10);
 
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
-		expect(await redis.get(target['getRedisKey'](key))).toBe(
-			'"expected result"',
+		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
+			await valueSerializer.serialize('expected result'),
 		);
 		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
 	});
@@ -65,10 +68,11 @@ describe('index.ts', () => {
 		const callback = jest.fn().mockResolvedValue('expected result');
 
 		const result = await target.get(key, callback, () => true);
+		await delay(10);
 
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
-		expect(await redis.get(target['getRedisKey'](key))).toBe(null);
+		expect(await redis.getBuffer(target['getRedisKey'](key))).toBe(null);
 	});
 
 	it('should acquire redis semaphore, fill redis cache with callback result with no ttl, and release semaphore when redisTtl is 0', async () => {
@@ -83,23 +87,25 @@ describe('index.ts', () => {
 		);
 
 		const result = await target0.get(key, callback);
+		await delay(10);
 
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
-		expect(await redis.get(target['getRedisKey'](key))).toBe(
-			'"expected result"',
+		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
+			await valueSerializer.serialize('expected result'),
 		);
-		expect(await redis.ttl(target['getRedisKey'](key))).toBeLessThan(0);
+		expect(await redis.ttl(target['getRedisKey'](key))).toBeLessThan(10);
 	});
 
 	it('should acquire redis semaphore, not fill redis cache with callback result, and release semaphore when callback result is undefined', async () => {
 		const callback = jest.fn().mockResolvedValue(undefined);
 
 		const result = await target.get(key, callback);
+		await delay(10);
 
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBeUndefined();
-		expect(await redis.get(target['getRedisKey'](key))).toBe(null);
+		expect(await redis.getBuffer(target['getRedisKey'](key))).toBe(null);
 	});
 
 	it('should wait for semaphore acquisition, fill redis cache with callback result, and release semaphore when the semaphore is previously acquired and no result is found in redis', async () => {
@@ -120,11 +126,12 @@ describe('index.ts', () => {
 			release(),
 			checkCalls(),
 		]);
+		await delay(10);
 
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
-		expect(await redis.get(target['getRedisKey'](key))).toBe(
-			'"expected result"',
+		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
+			await valueSerializer.serialize('expected result'),
 		);
 	});
 
@@ -139,26 +146,22 @@ describe('index.ts', () => {
 		}
 
 		const [result] = await Promise.all([target.get(key, callback), release()]);
+		await delay(10);
 
 		expect(callback).toHaveCallsLike();
 		expect(result).toBe('cached result');
-		expect(await redis.get(target['getRedisKey'](key))).toBe('"cached result"');
+		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
+			await valueSerializer.serialize('cached result'),
+		);
 	});
 
-	it('should wait for semaphore acquisition, get result from cache, and release semaphore when the semaphore is previously acquired and some result is found in redis', async () => {
+	it('should return info from cache even if it is not gzipped', async () => {
 		const callback = jest.fn().mockResolvedValue('expected result');
-		const semaphore = target['getSemaphore'](key);
-		await semaphore.acquire();
-		async function release() {
-			await delay(100);
-			await redis.set(target['getRedisKey'](key), '"cached result"');
-			await semaphore.release();
-		}
+		await redis.set(target['getRedisKey'](key), '"cached result"');
 
-		const [result] = await Promise.all([target.get(key, callback), release()]);
+		const result = await target.get(key, callback);
 
 		expect(callback).toHaveCallsLike();
 		expect(result).toBe('cached result');
-		expect(await redis.get(target['getRedisKey'](key))).toBe('"cached result"');
 	});
 });
