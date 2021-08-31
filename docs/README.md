@@ -1,6 +1,6 @@
-fluent-iterable - v0.4.0
+fluent-iterable - v0.4.1
 
-# fluent-iterable - v0.4.0
+# fluent-iterable - v0.4.1
 
 ## Table of contents
 
@@ -31,7 +31,7 @@ fluent-iterable - v0.4.0
 
 Ƭ **Action**: () => *PromiseLike*<void\>
 
-#### Type declaration:
+#### Type declaration
 
 ▸ (): *PromiseLike*<void\>
 
@@ -43,15 +43,15 @@ ___
 
 Ƭ **LogError**: (`message`: *string*) => *any*
 
-#### Type declaration:
+#### Type declaration
 
 ▸ (`message`: *string*): *any*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`message` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `message` | *string* |
 
 **Returns:** *any*
 
@@ -61,15 +61,15 @@ ___
 
 Ƭ **TryTo**: (`action`: [*Action*](README.md#action)) => *PromiseLike*<void\>
 
-#### Type declaration:
+#### Type declaration
 
 ▸ (`action`: [*Action*](README.md#action)): *PromiseLike*<void\>
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`action` | [*Action*](README.md#action) |
+| Name | Type |
+| :------ | :------ |
+| `action` | [*Action*](README.md#action) |
 
 **Returns:** *PromiseLike*<void\>
 
@@ -77,22 +77,22 @@ Name | Type |
 
 ### DEFAULT\_ACQUIRE\_TIMEOUT
 
-• `Const` **DEFAULT\_ACQUIRE\_TIMEOUT**: *60000*= 60000
+• `Const` **DEFAULT\_ACQUIRE\_TIMEOUT**: ``60000``= 60000
 
 ___
 
 ### DEFAULT\_LOCK\_TIMEOUT
 
-• `Const` **DEFAULT\_LOCK\_TIMEOUT**: *10000*= 10000
+• `Const` **DEFAULT\_LOCK\_TIMEOUT**: ``10000``= 10000
 
 ___
 
 ### DEFAULT\_REFRESH\_INTERVAL
 
-• `Const` **DEFAULT\_REFRESH\_INTERVAL**: *8000*= 8000
+• `Const` **DEFAULT\_REFRESH\_INTERVAL**: ``8000``= 8000
 
 ___
 
 ### DEFAULT\_RETRY\_INTERVAL
 
-• `Const` **DEFAULT\_RETRY\_INTERVAL**: *100*= 100
+• `Const` **DEFAULT\_RETRY\_INTERVAL**: ``100``= 100

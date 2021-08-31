@@ -1,10 +1,10 @@
-[fluent-iterable - v0.4.0](../README.md) / RememberedRedisConfig
+[fluent-iterable - v0.4.1](../README.md) / RememberedRedisConfig
 
 # Interface: RememberedRedisConfig
 
 ## Hierarchy
 
-* *RememberedConfig*
+- *RememberedConfig*
 
   ↳ **RememberedRedisConfig**
 
@@ -47,15 +47,15 @@ ___
 
 • `Optional` **onCache**: (`key`: *string*) => *void*
 
-#### Type declaration:
+#### Type declaration
 
 ▸ (`key`: *string*): *void*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *void*
 
@@ -65,19 +65,19 @@ ___
 
 • `Optional` **onReused**: (`key`: *string*) => *void*
 
-#### Type declaration:
+#### Type declaration
 
 ▸ (`key`: *string*): *void*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *void*
 
-Inherited from: void
+Inherited from: RememberedConfig.onReused
 
 ___
 
@@ -109,4 +109,4 @@ ___
 
 • **ttl**: *number*
 
-Overrides: void
+Overrides: RememberedConfig.ttl

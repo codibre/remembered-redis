@@ -1,5 +1,8 @@
 
-## 0.4.0
+## 0.4.1
+* 13e39d4 updating packages and fixing vulnerabilities
+## v0.4.0
+* b055528 0.4.0
 * 36a0839 adding gzipping to cache
 ## v0.3.1
 * 02c21c1 0.3.1

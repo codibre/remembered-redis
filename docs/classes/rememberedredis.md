@@ -1,10 +1,10 @@
-[fluent-iterable - v0.4.0](../README.md) / RememberedRedis
+[fluent-iterable - v0.4.1](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
 ## Hierarchy
 
-* *Remembered*
+- *Remembered*
 
   ↳ **RememberedRedis**
 
@@ -39,16 +39,16 @@
 
 \+ **new RememberedRedis**(`config`: [*RememberedRedisConfig*](../interfaces/rememberedredisconfig.md), `redis`: *Redis*): [*RememberedRedis*](rememberedredis.md)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`config` | [*RememberedRedisConfig*](../interfaces/rememberedredisconfig.md) |
-`redis` | *Redis* |
+| Name | Type |
+| :------ | :------ |
+| `config` | [*RememberedRedisConfig*](../interfaces/rememberedredisconfig.md) |
+| `redis` | *Redis* |
 
 **Returns:** [*RememberedRedis*](rememberedredis.md)
 
-Overrides: void
+Overrides: Remembered.constructor
 
 ## Properties
 
@@ -56,15 +56,15 @@ Overrides: void
 
 • `Private` `Optional` **onCache**: (`key`: *string*) => *void*
 
-#### Type declaration:
+#### Type declaration
 
 ▸ (`key`: *string*): *void*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *void*
 
@@ -98,41 +98,41 @@ ___
 
 ▸ **get**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>, `noCacheIf?`: (`t`: T) => *boolean*): *PromiseLike*<T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`callback` | () => *PromiseLike*<T\> |
-`noCacheIf?` | (`t`: T) => *boolean* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `callback` | () => *PromiseLike*<T\> |
+| `noCacheIf?` | (`t`: T) => *boolean* |
 
 **Returns:** *PromiseLike*<T\>
 
-Overrides: void
+Overrides: Remembered.get
 
 ___
 
 ### getFromRedis
 
-▸ `Private`**getFromRedis**<T\>(`key`: *string*): *Promise*<*typeof* EMPTY \| T\>
+▸ `Private` **getFromRedis**<T\>(`key`: *string*): *Promise*<*typeof* EMPTY \| T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *Promise*<*typeof* EMPTY \| T\>
 
@@ -140,13 +140,13 @@ ___
 
 ### getRedisKey
 
-▸ `Private`**getRedisKey**(`key`: *string*): *string*
+▸ `Private` **getRedisKey**(`key`: *string*): *string*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *string*
 
@@ -154,21 +154,21 @@ ___
 
 ### getResult
 
-▸ `Private`**getResult**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>, `noCacheIf?`: (`t`: T) => *boolean*): *Promise*<T\>
+▸ `Private` **getResult**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>, `noCacheIf?`: (`t`: T) => *boolean*): *Promise*<T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`callback` | () => *PromiseLike*<T\> |
-`noCacheIf?` | (`t`: T) => *boolean* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `callback` | () => *PromiseLike*<T\> |
+| `noCacheIf?` | (`t`: T) => *boolean* |
 
 **Returns:** *Promise*<T\>
 
@@ -176,13 +176,13 @@ ___
 
 ### getSemaphore
 
-▸ `Private`**getSemaphore**(`key`: *string*): *default*
+▸ `Private` **getSemaphore**(`key`: *string*): *default*
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
 
 **Returns:** *default*
 
@@ -190,20 +190,20 @@ ___
 
 ### saveToRedis
 
-▸ `Private`**saveToRedis**<T\>(`key`: *string*, `result`: T): *Promise*<void\>
+▸ `Private` **saveToRedis**<T\>(`key`: *string*, `result`: T): *Promise*<void\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`result` | T |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `result` | T |
 
 **Returns:** *Promise*<void\>
 
@@ -211,20 +211,20 @@ ___
 
 ### tryCache
 
-▸ `Private`**tryCache**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>): *Promise*<T\>
+▸ `Private` **tryCache**<T\>(`key`: *string*, `callback`: () => *PromiseLike*<T\>): *Promise*<T\>
 
-#### Type parameters:
+#### Type parameters
 
-Name |
-:------ |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`key` | *string* |
-`callback` | () => *PromiseLike*<T\> |
+| Name | Type |
+| :------ | :------ |
+| `key` | *string* |
+| `callback` | () => *PromiseLike*<T\> |
 
 **Returns:** *Promise*<T\>
 
@@ -234,22 +234,22 @@ ___
 
 ▸ **wrap**<T, K, R\>(`callback`: (...`args`: T) => R, `getKey`: (...`args`: K) => *string*, `noCacheIf?`: (`result`: R *extends* *PromiseLike*<TR\> ? TR : *never*) => *boolean*): *function*
 
-#### Type parameters:
+#### Type parameters
 
-Name | Type |
-:------ | :------ |
-`T` | *any*[] |
-`K` | *any*[] |
-`R` | *PromiseLike*<any, R\> |
+| Name | Type |
+| :------ | :------ |
+| `T` | *any*[] |
+| `K` | *any*[] |
+| `R` | *PromiseLike*<any, R\> |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
-:------ | :------ |
-`callback` | (...`args`: T) => R |
-`getKey` | (...`args`: K) => *string* |
-`noCacheIf?` | (`result`: R *extends* *PromiseLike*<TR\> ? TR : *never*) => *boolean* |
+| Name | Type |
+| :------ | :------ |
+| `callback` | (...`args`: T) => R |
+| `getKey` | (...`args`: K) => *string* |
+| `noCacheIf?` | (`result`: R *extends* *PromiseLike*<TR\> ? TR : *never*) => *boolean* |
 
 **Returns:** (...`args`: T) => R
 
-Inherited from: void
+Inherited from: Remembered.wrap
