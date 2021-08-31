@@ -102,7 +102,7 @@
   },
   "dependencies": {
     "ioredis": "*",
-    "multi-serializer": "^0.1.4",
+    "multi-serializer": "*",
     "redis-semaphore": "*",
     "remembered": ">=0.4.2"
   }
