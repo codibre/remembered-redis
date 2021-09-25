@@ -1,5 +1,8 @@
 
-## 0.4.1
+## 0.5.0
+* b671028 feat: implementing redisTtl function mode
+## v0.4.1
+* 03ba326 0.4.1
 * 13e39d4 updating packages and fixing vulnerabilities
 ## v0.4.0
 * b055528 0.4.0
