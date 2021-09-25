@@ -14,16 +14,44 @@ export const DEFAULT_REFRESH_INTERVAL = 8000;
 const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
 
+function prepareConfig(config: RememberedRedisConfig) {
+	const { redisTtl, ttl } = config;
+
+	if (!redisTtl) {
+		config.ttl = 0;
+	} else if (typeof redisTtl === 'function') {
+		const fTtl = typeof ttl === 'number' ? () => ttl : ttl;
+		config.ttl = <T>(r: T) => {
+			const rTtl = redisTtl(r);
+
+			return rTtl ? Math.min(fTtl(r), rTtl) : 0;
+		};
+	} else if (typeof ttl === 'number') {
+		config.ttl = redisTtl ? Math.min(ttl, redisTtl) : 0;
+	} else {
+		config.ttl = <T>(t: T) => {
+			const bTtl = ttl(t);
+
+			return bTtl && redisTtl ? Math.min(bTtl, redisTtl) : 0;
+		};
+	}
+
+	return config;
+}
+
 export class RememberedRedis extends Remembered {
 	private semaphoreConfig: LockOptions;
 	private redisPrefix: string;
-	private redisTtl: number | undefined;
+	private redisTtl?: <T>(r: T) => number;
 	private tryTo: TryTo;
 	private onCache?: (key: string) => void;
 
 	constructor(config: RememberedRedisConfig, private readonly redis: Redis) {
-		super(config);
-		this.redisTtl = config.redisTtl;
+		super(prepareConfig(config));
+		this.redisTtl =
+			typeof config.redisTtl === 'number'
+				? () => config.redisTtl as number
+				: config.redisTtl;
 		this.tryTo = tryToFactory(config.logError);
 		this.semaphoreConfig = getSemaphoreConfig(config);
 		this.redisPrefix = getRedisPrefix(config.redisPrefix);
@@ -73,8 +101,9 @@ export class RememberedRedis extends Remembered {
 	private async saveToRedis<T>(key: string, result: T): Promise<void> {
 		const redisKey = this.getRedisKey(key);
 		const value = await valueSerializer.serialize(result);
-		await (this.redisTtl
-			? this.redis.setex(redisKey, this.redisTtl, value as Buffer)
+		const ttl = this.redisTtl?.(result);
+		await (ttl
+			? this.redis.setex(redisKey, ttl, value as Buffer)
 			: this.redis.set(redisKey, value as Buffer));
 	}
 

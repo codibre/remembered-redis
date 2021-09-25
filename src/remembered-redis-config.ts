@@ -1,11 +1,10 @@
-import { RememberedConfig } from 'remembered';
+import { RememberedConfig, Ttl } from 'remembered';
 
 export type LogError = (message: string) => any;
 export type Action = () => PromiseLike<void>;
 export type TryTo = (action: Action) => PromiseLike<void>;
 export interface RememberedRedisConfig extends RememberedConfig {
-	ttl: number;
-	redisTtl?: number;
+	redisTtl?: Ttl;
 	redisPrefix?: string;
 	lockTimeout?: number;
 	acquireTimeout?: number;

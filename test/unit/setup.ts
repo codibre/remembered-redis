@@ -21,13 +21,13 @@ expect.extend({
 		const errors: string[] = [];
 		try {
 			expect(spy).toBeCalledTimes(parameters.length);
-		} catch (err) {
+		} catch (err: any) {
 			errors.push(err);
 		}
 		parameters.forEach((params, i) => {
 			try {
 				expect(spy).toHaveBeenNthCalledWith(i + 1, ...params);
-			} catch (err) {
+			} catch (err: any) {
 				errors.push(err.message.replace(/\n+Number of calls: .+$/, '\n'));
 			}
 		});
