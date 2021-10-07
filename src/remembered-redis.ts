@@ -62,10 +62,12 @@ export class RememberedRedis extends Remembered {
 		key: string,
 		callback: () => PromiseLike<T>,
 		noCacheIf?: (t: T) => boolean,
+		ttl?: number,
 	): PromiseLike<T> {
 		return super.get(
 			key,
-			() => this.tryCache(key, () => this.getResult(key, callback, noCacheIf)),
+			() =>
+				this.tryCache(key, () => this.getResult(key, callback, noCacheIf, ttl)),
 			noCacheIf,
 		);
 	}
@@ -74,6 +76,7 @@ export class RememberedRedis extends Remembered {
 		key: string,
 		callback: () => PromiseLike<T>,
 		noCacheIf?: (t: T) => boolean,
+		ttl?: number,
 	) {
 		const semaphore = this.getSemaphore(key);
 		await this.tryTo(semaphore.acquire.bind(semaphore));
@@ -81,7 +84,7 @@ export class RememberedRedis extends Remembered {
 		try {
 			const result = await this.tryCache(key, callback);
 			if (result !== undefined && !noCacheIf?.(result)) {
-				saveCache = this.saveToRedis<T>(key, result);
+				saveCache = this.updateCache<T>(key, result, ttl);
 			}
 			return result;
 		} finally {
@@ -98,10 +101,13 @@ export class RememberedRedis extends Remembered {
 		);
 	}
 
-	private async saveToRedis<T>(key: string, result: T): Promise<void> {
+	async updateCache<T>(
+		key: string,
+		result: T,
+		ttl = this.redisTtl?.(result),
+	): Promise<void> {
 		const redisKey = this.getRedisKey(key);
 		const value = await valueSerializer.serialize(result);
-		const ttl = this.redisTtl?.(result);
 		await (ttl
 			? this.redis.setex(redisKey, ttl, value as Buffer)
 			: this.redis.set(redisKey, value as Buffer));
