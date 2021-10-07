@@ -1,5 +1,9 @@
 
-## 0.5.2
+## 0.5.3
+* 248971b fix: fixing updateCache when ttl is 0
+* 6a1c570 fix: fixing updateCache when ttl is 0
+## v0.5.2
+* 485ea70 0.5.2
 * c3a9841 fix: fixing updateCache when ttl is 0
 ## v0.5.1
 * 7beef73 0.5.1
