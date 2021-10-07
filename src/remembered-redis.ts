@@ -106,11 +106,13 @@ export class RememberedRedis extends Remembered {
 		result: T,
 		ttl = this.redisTtl?.(result),
 	): Promise<void> {
-		const redisKey = this.getRedisKey(key);
-		const value = await valueSerializer.serialize(result);
-		await (ttl
-			? this.redis.setex(redisKey, ttl, value as Buffer)
-			: this.redis.set(redisKey, value as Buffer));
+		if (ttl) {
+			const redisKey = this.getRedisKey(key);
+			const value = await valueSerializer.serialize(result);
+			await (ttl
+				? this.redis.setex(redisKey, ttl, value as Buffer)
+				: this.redis.set(redisKey, value as Buffer));
+		}
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
