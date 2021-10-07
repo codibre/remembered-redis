@@ -111,6 +111,10 @@ export class RememberedRedis extends Remembered {
 		await this.redis.setex(redisKey, ttl || 1, value as Buffer);
 	}
 
+	clearCache(key: string) {
+		return this.redis.del(this.getRedisKey(key));
+	}
+
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
 		const result = await this.getFromRedis<T>(key);
 		if (result !== EMPTY) {
