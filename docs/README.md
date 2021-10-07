@@ -1,16 +1,16 @@
-fluent-iterable - v0.4.1
+@remembered/redis - v0.5.1
 
-# fluent-iterable - v0.4.1
+# @remembered/redis - v0.5.1
 
 ## Table of contents
 
 ### Classes
 
-- [RememberedRedis](classes/rememberedredis.md)
+- [RememberedRedis](classes/RememberedRedis.md)
 
 ### Interfaces
 
-- [RememberedRedisConfig](interfaces/rememberedredisconfig.md)
+- [RememberedRedisConfig](interfaces/RememberedRedisConfig.md)
 
 ### Type aliases
 
@@ -29,70 +29,76 @@ fluent-iterable - v0.4.1
 
 ### Action
 
-Ƭ **Action**: () => *PromiseLike*<void\>
+Ƭ **Action**: () => `PromiseLike`<`void`\>
 
 #### Type declaration
 
-▸ (): *PromiseLike*<void\>
+▸ (): `PromiseLike`<`void`\>
 
-**Returns:** *PromiseLike*<void\>
+##### Returns
+
+`PromiseLike`<`void`\>
 
 ___
 
 ### LogError
 
-Ƭ **LogError**: (`message`: *string*) => *any*
+Ƭ **LogError**: (`message`: `string`) => `any`
 
 #### Type declaration
 
-▸ (`message`: *string*): *any*
+▸ (`message`): `any`
 
-#### Parameters
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `message` | *string* |
+| `message` | `string` |
 
-**Returns:** *any*
+##### Returns
+
+`any`
 
 ___
 
 ### TryTo
 
-Ƭ **TryTo**: (`action`: [*Action*](README.md#action)) => *PromiseLike*<void\>
+Ƭ **TryTo**: (`action`: [`Action`](README.md#action)) => `PromiseLike`<`void`\>
 
 #### Type declaration
 
-▸ (`action`: [*Action*](README.md#action)): *PromiseLike*<void\>
+▸ (`action`): `PromiseLike`<`void`\>
 
-#### Parameters
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `action` | [*Action*](README.md#action) |
+| `action` | [`Action`](README.md#action) |
 
-**Returns:** *PromiseLike*<void\>
+##### Returns
+
+`PromiseLike`<`void`\>
 
 ## Variables
 
 ### DEFAULT\_ACQUIRE\_TIMEOUT
 
-• `Const` **DEFAULT\_ACQUIRE\_TIMEOUT**: ``60000``= 60000
+• **DEFAULT\_ACQUIRE\_TIMEOUT**: ``60000``
 
 ___
 
 ### DEFAULT\_LOCK\_TIMEOUT
 
-• `Const` **DEFAULT\_LOCK\_TIMEOUT**: ``10000``= 10000
+• **DEFAULT\_LOCK\_TIMEOUT**: ``10000``
 
 ___
 
 ### DEFAULT\_REFRESH\_INTERVAL
 
-• `Const` **DEFAULT\_REFRESH\_INTERVAL**: ``8000``= 8000
+• **DEFAULT\_REFRESH\_INTERVAL**: ``8000``
 
 ___
 
 ### DEFAULT\_RETRY\_INTERVAL
 
-• `Const` **DEFAULT\_RETRY\_INTERVAL**: ``100``= 100
+• **DEFAULT\_RETRY\_INTERVAL**: ``100``

@@ -1,5 +1,8 @@
 
-## 0.5.0
+## 0.5.1
+* 636e8cf feat: making ttl informable
+## v0.5.0
+* 1db4467 0.5.0
 * b671028 feat: implementing redisTtl function mode
 ## v0.4.1
 * 03ba326 0.4.1
