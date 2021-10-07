@@ -1,6 +1,6 @@
-@remembered/redis - v0.5.3
+@remembered/redis - v0.6.0
 
-# @remembered/redis - v0.5.3
+# @remembered/redis - v0.6.0
 
 ## Table of contents
 

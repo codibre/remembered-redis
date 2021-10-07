@@ -1,5 +1,8 @@
 
-## 0.5.3
+## 0.6.0
+* 43a2e9f feat: adding clearCache method
+## v0.5.3
+* f6cd2a9 0.5.3
 * 248971b fix: fixing updateCache when ttl is 0
 * 6a1c570 fix: fixing updateCache when ttl is 0
 ## v0.5.2

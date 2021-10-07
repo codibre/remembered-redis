@@ -1,4 +1,4 @@
-[@remembered/redis - v0.5.3](../README.md) / RememberedRedis
+[@remembered/redis - v0.6.0](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -24,6 +24,7 @@
 
 ### Methods
 
+- [clearCache](RememberedRedis.md#clearcache)
 - [get](RememberedRedis.md#get)
 - [getFromRedis](RememberedRedis.md#getfromredis)
 - [getRedisKey](RememberedRedis.md#getrediskey)
@@ -115,6 +116,22 @@ ___
 • `Private` **tryTo**: [`TryTo`](../README.md#tryto)
 
 ## Methods
+
+### clearCache
+
+▸ **clearCache**(`key`): `Promise`<`number`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `key` | `string` |
+
+#### Returns
+
+`Promise`<`number`\>
+
+___
 
 ### get
 
