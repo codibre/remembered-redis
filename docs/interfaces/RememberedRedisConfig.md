@@ -1,4 +1,4 @@
-[@remembered/redis - v0.7.5](../README.md) / RememberedRedisConfig
+[@remembered/redis - v0.7.6](../README.md) / RememberedRedisConfig
 
 # Interface: RememberedRedisConfig
 
