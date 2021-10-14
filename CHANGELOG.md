@@ -1,5 +1,8 @@
 
-## 0.7.4
+## 0.7.5
+* 7ad3eb5 docs: updating readme
+## v0.7.4
+* b31c9ec 0.7.4
 * 7f13fd2 docs: updating readme
 * c3690b5 Merge pull request #2 from Codibre/alternative-persistence
 ## v0.7.3
