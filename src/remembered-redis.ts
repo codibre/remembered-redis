@@ -19,7 +19,7 @@ export const DEFAULT_LOCK_TIMEOUT = 10000;
 export const DEFAULT_ACQUIRE_TIMEOUT = 60000;
 export const DEFAULT_RETRY_INTERVAL = 100;
 export const DEFAULT_REFRESH_INTERVAL = 8000;
-const EMPTY = Symbol('Empty');
+export const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
 
 function prepareConfig(config: RememberedRedisConfig) {
@@ -181,7 +181,7 @@ export class RememberedRedis extends Remembered {
 			if (!this.alternativePersistence) {
 				return valueSerializer.deserialize(cached);
 			}
-			cached = await this.alternativePersistence.get(key);
+			cached = await this.alternativePersistence.get(cached.toString());
 			if (cached) {
 				const deserialized = await valueSerializer.deserialize(cached);
 				return deserialized[redisKey];
