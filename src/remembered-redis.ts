@@ -115,11 +115,13 @@ export class RememberedRedis extends Remembered {
 		const redisKey = this.getRedisKey(key);
 		let value = (await valueSerializer.serialize(result)) as string | Buffer;
 		const realTtl = ttl || 1;
+		const promises: Promise<unknown>[] = [];
 		if (this.alternativePersistence) {
-			await this.alternativePersistence.save(key, value, realTtl);
+			promises.push(this.alternativePersistence.save(key, value, realTtl));
 			value = '1';
 		}
-		await this.redis.setex(redisKey, realTtl, value);
+		promises.push(this.redis.setex(redisKey, realTtl, value));
+		await Promise.all(promises);
 	}
 
 	clearCache(key: string) {
