@@ -41,6 +41,11 @@ const result = await semaphoredMyRequest(request);
 
 Notice that the remembering key in the wrap option is defined by the second callback. This function receives the same parameters as the first one.
 
+# Important!
+
+The **ttl** refers to the local ttl, the one that the **remembered** package uses to reuse promises. **redisTtl**, in the other hand, refers to the ttl the cache will have in Redis. This distinction is important as, locally, you have a limited memory.
+You can make the local ttl be just some seconds or even 0 (for the promise to be reused just while it is not resolved), while **RedisTtl** can be larger, without affecting memory consumption in your service.
+
 # How to use alternative persistence
 
 Sometimes the size of your data is just too big to redis to be cheap solution, and you need to take some common strategy, like, to save the data in S3 and a reference to the saved file in redis, for ttl control. This package offers a way to apply this strategy through the configuration **alternativePersistence**. Here's an example:
@@ -126,11 +131,6 @@ export class RedisCache implements AlternativePersistence {
 ```
 
 This may not seem reasonable, but, as you joining many results into one can one with maxSavingDelay > 0, you can favor the content compression with this, and also save a lot of memory in your instance.
-
-# Important!
-
-The **ttl** refers to the local ttl, the one that the **remembered** package uses to reuse promises. **redisTtl**, in the other hand, refers to the ttl the cache will have in Redis. This distinction is important as, locally, you have a limited memory.
-You can make the local ttl be just some seconds or even 0 (for the promise to be reused just while it is not resolved), while **RedisTtl** can be larger, without affecting memory consumption in your service.
 
 ## License
 
