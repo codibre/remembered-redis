@@ -1,17 +1,25 @@
+import { v4 } from 'uuid';
 import { Remembered } from 'remembered';
 import { Redis } from 'ioredis';
 import { LockOptions, Semaphore } from 'redis-semaphore';
-import { RememberedRedisConfig, TryTo } from './remembered-redis-config';
+import {
+	RememberedRedisConfig,
+	TryTo,
+	AlternativePersistence,
+} from './remembered-redis-config';
 import { getSemaphoreConfig } from './get-semaphore-config';
 import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
 import { valueSerializer } from './value-serializer';
+import { promisify } from 'util';
+
+const delay = promisify(setTimeout);
 
 export const DEFAULT_LOCK_TIMEOUT = 10000;
 export const DEFAULT_ACQUIRE_TIMEOUT = 60000;
 export const DEFAULT_RETRY_INTERVAL = 100;
 export const DEFAULT_REFRESH_INTERVAL = 8000;
-const EMPTY = Symbol('Empty');
+export const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
 
 function prepareConfig(config: RememberedRedisConfig) {
@@ -45,6 +53,10 @@ export class RememberedRedis extends Remembered {
 	private redisTtl?: <T>(r: T) => number;
 	private tryTo: TryTo;
 	private onCache?: (key: string) => void;
+	private alternativePersistence?: AlternativePersistence;
+	private savingObjects: Record<string, unknown> = {};
+	private waitSaving = false;
+	private savingPromise?: Promise<unknown>;
 
 	constructor(config: RememberedRedisConfig, private readonly redis: Redis) {
 		super(prepareConfig(config));
@@ -56,6 +68,7 @@ export class RememberedRedis extends Remembered {
 		this.semaphoreConfig = getSemaphoreConfig(config);
 		this.redisPrefix = getRedisPrefix(config.redisPrefix);
 		this.onCache = config.onCache;
+		this.alternativePersistence = config.alternativePersistence;
 	}
 
 	get<T>(
@@ -107,8 +120,43 @@ export class RememberedRedis extends Remembered {
 		ttl = this.redisTtl?.(result),
 	): Promise<void> {
 		const redisKey = this.getRedisKey(key);
-		const value = await valueSerializer.serialize(result);
-		await this.redis.setex(redisKey, ttl || 1, value as Buffer);
+		const realTtl = ttl || 1;
+		if (this.alternativePersistence) {
+			if (!this.waitSaving) {
+				key = v4();
+				const savingObjects: Record<string, unknown> = {};
+				savingObjects[redisKey] = result;
+				if (this.alternativePersistence.maxSavingDelay) {
+					this.savingObjects = savingObjects;
+					this.waitSaving = true;
+					await delay(this.alternativePersistence.maxSavingDelay);
+					this.waitSaving = false;
+				}
+				this.savingPromise = Promise.all([
+					this.persist(savingObjects, (value) =>
+						this.alternativePersistence!.save(key, value, realTtl),
+					),
+					this.redis.setex(redisKey, realTtl, key),
+				]);
+			} else {
+				this.savingObjects[redisKey] = result;
+			}
+			await this.savingPromise;
+		} else {
+			await this.persist(result, (value) =>
+				this.redis.setex(redisKey, realTtl, value),
+			);
+		}
+	}
+
+	private async persist<T>(
+		savingObjects: T,
+		saving: (payload: string | Buffer) => Promise<unknown>,
+	): Promise<unknown> {
+		const value = (await valueSerializer.serialize(savingObjects)) as
+			| string
+			| Buffer;
+		return saving(value);
 	}
 
 	clearCache(key: string) {
@@ -116,7 +164,7 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
-		const result = await this.getFromRedis<T>(key);
+		const result = await this.getFromCache<T>(key);
 		if (result !== EMPTY) {
 			this.onCache?.(key);
 			return result;
@@ -124,9 +172,22 @@ export class RememberedRedis extends Remembered {
 		return callback();
 	}
 
-	private async getFromRedis<T>(key: string): Promise<T | typeof EMPTY> {
-		const cached = await this.redis.getBuffer(this.getRedisKey(key));
-		return cached ? valueSerializer.deserialize(cached) : EMPTY;
+	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
+		const redisKey = this.getRedisKey(key);
+		let cached: string | Buffer | undefined = await this.redis.getBuffer(
+			redisKey,
+		);
+		if (cached) {
+			if (!this.alternativePersistence) {
+				return valueSerializer.deserialize(cached);
+			}
+			cached = await this.alternativePersistence.get(cached.toString());
+			if (cached) {
+				const deserialized = await valueSerializer.deserialize(cached);
+				return deserialized[redisKey];
+			}
+		}
+		return EMPTY;
 	}
 
 	private getRedisKey(key: string) {

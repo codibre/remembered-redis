@@ -1,5 +1,21 @@
 
-## 0.6.0
+## 0.7.3
+* b1a9e5e fix: fixing get from cache and exposing EMPTY
+## v0.7.2
+* 0ee48a4 0.7.2
+* 702f4a7 fix: treating case where alternativePersistence doesn't found the key
+## v0.7.1
+* d72f264 0.7.1
+* d222358 feat: exposing getFromCache
+* 83bded3 fix: getting the right key from s3 when getting
+* c5aa4d2 feat: implementing saving delay
+* 8d03c05 fix: returning EMPTY when alternative persistence get is falsy]
+* 8b91c7c fix: paralellizing redis and alternative persistence promises
+## v0.7.0
+* d23206b 0.7.0
+* 502d2c8 feat: implementing alternative persistence option
+## v0.6.0
+* 6efa001 0.6.0
 * 43a2e9f feat: adding clearCache method
 ## v0.5.3
 * f6cd2a9 0.5.3
