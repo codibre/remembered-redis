@@ -48,7 +48,7 @@ You can make the local ttl be just some seconds or even 0 (for the promise to be
 
 # How to use alternative persistence
 
-Sometimes the size of your data is just too big to redis to be cheap solution, and you need to take some common strategy, like, to save the data in S3 and a reference to the saved file in redis, for ttl control. This package offers a way to apply this strategy through the configuration **alternativePersistence**. Here's an example:
+Sometimes the size of your data is just too big for redis to be cheap solution, and you need to take some common strategy, like, to save the data in S3 and to use a reference to the saved file in Redis, for ttl control. This package offers a way to apply this strategy seamlessly through the configuration **alternativePersistence**. Here's an example:
 
 First, you need to implement the interface **AlternativePersistence**. The implementation below is a valid one to use with S3
 ```ts
@@ -106,11 +106,11 @@ const remembered = new RememberedRedis(
 );
 ```
 
-That's it! Now S3 will get the heavy data while redis control semaphore, and ttl! But there's more to it: **maxSavingDelay** is part of the **AlternativePersistence** interface, and it determines how much time **remembered-redis** will wait to save the new data and to release the semaphore.
+That's it! Now S3 will get the heavy data while Redis control semaphore, and ttl! But there's more to it: **maxSavingDelay** is part of the **AlternativePersistence** interface, and it determines how much time **remembered-redis** will wait to save the new data and to release the semaphore.
 But why wait? Because more data can be gathered from another calls and all that data can be saved in the same S3 file.
-The data is also saved compressed, which will benefit from a larger file, and the number of objects sent to S3 will be much lesser than the number of results you have. For example, if you have 100 calls in 3 seconds, you'll only send 1 file to S3, avoiding 99 calls! This is important because S3 can charge you very high if your number of api calls is high, and with this strategy you can achieve a decreasing of almost 50% in it!
+The data is also saved compressed and it will benefit from a larger content, and the number of objects sent to S3 will be much lesser than the number of results you have. For example, if you have 100 calls in 3 seconds, you'll only send 1 file to S3, avoiding 99 calls! This is important because S3 can charge you very high if your number of api calls is big, and with this strategy you can decrease your cost by almost 50%!
 
-You can also experiment to use even a redis AlternativePersistence implementation:
+You can also use even a redis AlternativePersistence implementation:
 
 ```ts
 export class RedisCache implements AlternativePersistence {
@@ -130,7 +130,7 @@ export class RedisCache implements AlternativePersistence {
 }
 ```
 
-This may not seem reasonable, but, as you joining many results into one can one with maxSavingDelay > 0, you can favor the content compression with this, and also save a lot of memory in your instance.
+This may not seem reasonable, but, as you join many results into one can one when maxSavingDelay > 0, you can favor the compression with this, and save a lot of memory in your instance.
 
 ## License
 
