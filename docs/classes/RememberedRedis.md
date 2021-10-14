@@ -1,4 +1,4 @@
-[@remembered/redis - v0.7.0](../README.md) / RememberedRedis
+[@remembered/redis - v0.7.1](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -20,17 +20,21 @@
 - [onCache](RememberedRedis.md#oncache)
 - [redisPrefix](RememberedRedis.md#redisprefix)
 - [redisTtl](RememberedRedis.md#redisttl)
+- [savingObjects](RememberedRedis.md#savingobjects)
+- [savingPromise](RememberedRedis.md#savingpromise)
 - [semaphoreConfig](RememberedRedis.md#semaphoreconfig)
 - [tryTo](RememberedRedis.md#tryto)
+- [waitSaving](RememberedRedis.md#waitsaving)
 
 ### Methods
 
 - [clearCache](RememberedRedis.md#clearcache)
 - [get](RememberedRedis.md#get)
-- [getFromRedis](RememberedRedis.md#getfromredis)
+- [getFromCache](RememberedRedis.md#getfromcache)
 - [getRedisKey](RememberedRedis.md#getrediskey)
 - [getResult](RememberedRedis.md#getresult)
 - [getSemaphore](RememberedRedis.md#getsemaphore)
+- [persist](RememberedRedis.md#persist)
 - [tryCache](RememberedRedis.md#trycache)
 - [updateCache](RememberedRedis.md#updatecache)
 - [wrap](RememberedRedis.md#wrap)
@@ -112,6 +116,18 @@ ___
 
 ___
 
+### savingObjects
+
+• `Private` **savingObjects**: `Record`<`string`, `unknown`\> = `{}`
+
+___
+
+### savingPromise
+
+• `Private` `Optional` **savingPromise**: `Promise`<`unknown`\>
+
+___
+
 ### semaphoreConfig
 
 • `Private` **semaphoreConfig**: `LockOptions`
@@ -121,6 +137,12 @@ ___
 ### tryTo
 
 • `Private` **tryTo**: [`TryTo`](../README.md#tryto)
+
+___
+
+### waitSaving
+
+• `Private` **waitSaving**: `boolean` = `false`
 
 ## Methods
 
@@ -169,9 +191,9 @@ Remembered.get
 
 ___
 
-### getFromRedis
+### getFromCache
 
-▸ `Private` **getFromRedis**<`T`\>(`key`): `Promise`<typeof `EMPTY` \| `T`\>
+▸ **getFromCache**<`T`\>(`key`): `Promise`<typeof `EMPTY` \| `T`\>
 
 #### Type parameters
 
@@ -245,6 +267,29 @@ ___
 #### Returns
 
 `default`
+
+___
+
+### persist
+
+▸ `Private` **persist**<`T`\>(`savingObjects`, `saving`): `Promise`<`unknown`\>
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `savingObjects` | `T` |
+| `saving` | (`payload`: `string` \| `Buffer`) => `Promise`<`unknown`\> |
+
+#### Returns
+
+`Promise`<`unknown`\>
 
 ___
 

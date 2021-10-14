@@ -1,13 +1,23 @@
-[@remembered/redis - v0.7.0](../README.md) / AlternativePersistence
+[@remembered/redis - v0.7.1](../README.md) / AlternativePersistence
 
 # Interface: AlternativePersistence
 
 ## Table of contents
 
+### Properties
+
+- [maxSavingDelay](AlternativePersistence.md#maxsavingdelay)
+
 ### Methods
 
 - [get](AlternativePersistence.md#get)
 - [save](AlternativePersistence.md#save)
+
+## Properties
+
+### maxSavingDelay
+
+• `Optional` **maxSavingDelay**: `number`
 
 ## Methods
 

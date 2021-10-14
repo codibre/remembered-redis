@@ -1,5 +1,12 @@
 
-## 0.7.0
+## 0.7.1
+* d222358 feat: exposing getFromCache
+* 83bded3 fix: getting the right key from s3 when getting
+* c5aa4d2 feat: implementing saving delay
+* 8d03c05 fix: returning EMPTY when alternative persistence get is falsy]
+* 8b91c7c fix: paralellizing redis and alternative persistence promises
+## v0.7.0
+* d23206b 0.7.0
 * 502d2c8 feat: implementing alternative persistence option
 ## v0.6.0
 * 6efa001 0.6.0
