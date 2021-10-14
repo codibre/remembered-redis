@@ -1,5 +1,8 @@
 
-## 0.6.0
+## 0.7.0
+* 502d2c8 feat: implementing alternative persistence option
+## v0.6.0
+* 6efa001 0.6.0
 * 43a2e9f feat: adding clearCache method
 ## v0.5.3
 * f6cd2a9 0.5.3

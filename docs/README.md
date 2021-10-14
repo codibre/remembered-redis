@@ -1,6 +1,6 @@
-@remembered/redis - v0.6.0
+@remembered/redis - v0.7.0
 
-# @remembered/redis - v0.6.0
+# @remembered/redis - v0.7.0
 
 ## Table of contents
 
@@ -10,6 +10,7 @@
 
 ### Interfaces
 
+- [AlternativePersistence](interfaces/AlternativePersistence.md)
 - [RememberedRedisConfig](interfaces/RememberedRedisConfig.md)
 
 ### Type aliases

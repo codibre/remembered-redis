@@ -1,4 +1,4 @@
-[@remembered/redis - v0.6.0](../README.md) / RememberedRedis
+[@remembered/redis - v0.7.0](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -16,6 +16,7 @@
 
 ### Properties
 
+- [alternativePersistence](RememberedRedis.md#alternativepersistence)
 - [onCache](RememberedRedis.md#oncache)
 - [redisPrefix](RememberedRedis.md#redisprefix)
 - [redisTtl](RememberedRedis.md#redisttl)
@@ -52,6 +53,12 @@
 Remembered.constructor
 
 ## Properties
+
+### alternativePersistence
+
+• `Private` `Optional` **alternativePersistence**: [`AlternativePersistence`](../interfaces/AlternativePersistence.md)
+
+___
 
 ### onCache
 

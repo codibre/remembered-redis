@@ -1,4 +1,4 @@
-[@remembered/redis - v0.6.0](../README.md) / RememberedRedisConfig
+[@remembered/redis - v0.7.0](../README.md) / RememberedRedisConfig
 
 # Interface: RememberedRedisConfig
 
@@ -13,6 +13,7 @@
 ### Properties
 
 - [acquireTimeout](RememberedRedisConfig.md#acquiretimeout)
+- [alternativePersistence](RememberedRedisConfig.md#alternativepersistence)
 - [lockTimeout](RememberedRedisConfig.md#locktimeout)
 - [logError](RememberedRedisConfig.md#logerror)
 - [redisPrefix](RememberedRedisConfig.md#redisprefix)
@@ -31,6 +32,14 @@
 ### acquireTimeout
 
 • `Optional` **acquireTimeout**: `number`
+
+___
+
+### alternativePersistence
+
+• `Optional` **alternativePersistence**: [`AlternativePersistence`](AlternativePersistence.md)
+
+When informed, redis is used only for ttl control, but the real data is persisted using these methods
 
 ___
 
