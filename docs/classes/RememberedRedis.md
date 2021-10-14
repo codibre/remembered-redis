@@ -1,4 +1,4 @@
-[@remembered/redis - v0.7.1](../README.md) / RememberedRedis
+[@remembered/redis - v0.7.2](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 

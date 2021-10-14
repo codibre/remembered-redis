@@ -1,4 +1,4 @@
-[@remembered/redis - v0.7.1](../README.md) / AlternativePersistence
+[@remembered/redis - v0.7.2](../README.md) / AlternativePersistence
 
 # Interface: AlternativePersistence
 
@@ -23,7 +23,7 @@
 
 ### get
 
-▸ **get**(`key`): `Promise`<`string` \| `Buffer`\>
+▸ **get**(`key`): `Promise`<`undefined` \| `string` \| `Buffer`\>
 
 Get the content for the informed key
 
@@ -35,7 +35,7 @@ Get the content for the informed key
 
 #### Returns
 
-`Promise`<`string` \| `Buffer`\>
+`Promise`<`undefined` \| `string` \| `Buffer`\>
 
 ___
 

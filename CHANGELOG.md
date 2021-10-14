@@ -1,5 +1,8 @@
 
-## 0.7.1
+## 0.7.2
+* 702f4a7 fix: treating case where alternativePersistence doesn't found the key
+## v0.7.1
+* d72f264 0.7.1
 * d222358 feat: exposing getFromCache
 * 83bded3 fix: getting the right key from s3 when getting
 * c5aa4d2 feat: implementing saving delay
