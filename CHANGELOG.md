@@ -1,5 +1,9 @@
 
-## 0.7.3
+## 0.7.4
+* 7f13fd2 docs: updating readme
+* c3690b5 Merge pull request #2 from Codibre/alternative-persistence
+## v0.7.3
+* 9b9d0d8 0.7.3
 * b1a9e5e fix: fixing get from cache and exposing EMPTY
 ## v0.7.2
 * 0ee48a4 0.7.2
