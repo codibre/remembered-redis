@@ -145,7 +145,9 @@ export class RememberedRedis extends Remembered {
 			if (this.alternativePersistence) {
 				cached = await this.alternativePersistence.get(key);
 			}
-			return valueSerializer.deserialize(cached);
+      if (cached) {
+			  return valueSerializer.deserialize(cached);
+      }
 		}
 		return EMPTY;
 	}
