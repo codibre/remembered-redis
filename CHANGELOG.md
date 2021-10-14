@@ -1,5 +1,8 @@
 
-## 0.7.2
+## 0.7.3
+* b1a9e5e fix: fixing get from cache and exposing EMPTY
+## v0.7.2
+* 0ee48a4 0.7.2
 * 702f4a7 fix: treating case where alternativePersistence doesn't found the key
 ## v0.7.1
 * d72f264 0.7.1

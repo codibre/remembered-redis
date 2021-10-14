@@ -1,4 +1,4 @@
-[@remembered/redis - v0.7.2](../README.md) / RememberedRedis
+[@remembered/redis - v0.7.3](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -193,7 +193,7 @@ ___
 
 ### getFromCache
 
-▸ **getFromCache**<`T`\>(`key`): `Promise`<typeof `EMPTY` \| `T`\>
+▸ **getFromCache**<`T`\>(`key`): `Promise`<typeof [`EMPTY`](../README.md#empty) \| `T`\>
 
 #### Type parameters
 
@@ -209,7 +209,7 @@ ___
 
 #### Returns
 
-`Promise`<typeof `EMPTY` \| `T`\>
+`Promise`<typeof [`EMPTY`](../README.md#empty) \| `T`\>
 
 ___
 

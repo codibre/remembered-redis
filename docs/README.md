@@ -1,6 +1,6 @@
-@remembered/redis - v0.7.2
+@remembered/redis - v0.7.3
 
-# @remembered/redis - v0.7.2
+# @remembered/redis - v0.7.3
 
 ## Table of contents
 
@@ -25,6 +25,7 @@
 - [DEFAULT\_LOCK\_TIMEOUT](README.md#default_lock_timeout)
 - [DEFAULT\_REFRESH\_INTERVAL](README.md#default_refresh_interval)
 - [DEFAULT\_RETRY\_INTERVAL](README.md#default_retry_interval)
+- [EMPTY](README.md#empty)
 
 ## Type aliases
 
@@ -103,3 +104,9 @@ ___
 ### DEFAULT\_RETRY\_INTERVAL
 
 • **DEFAULT\_RETRY\_INTERVAL**: ``100``
+
+___
+
+### EMPTY
+
+• **EMPTY**: typeof [`EMPTY`](README.md#empty)
