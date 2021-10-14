@@ -17,6 +17,8 @@ export interface AlternativePersistence {
 	 * @param key the key for the content
 	 */
 	get(key: string): Promise<Buffer | string>;
+
+	maxSavingDelay?: number;
 }
 
 export interface RememberedRedisConfig extends RememberedConfig {

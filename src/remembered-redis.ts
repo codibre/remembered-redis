@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { Remembered } from 'remembered';
 import { Redis } from 'ioredis';
 import { LockOptions, Semaphore } from 'redis-semaphore';
@@ -10,6 +11,9 @@ import { getSemaphoreConfig } from './get-semaphore-config';
 import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
 import { valueSerializer } from './value-serializer';
+import { promisify } from 'util';
+
+const delay = promisify(setTimeout);
 
 export const DEFAULT_LOCK_TIMEOUT = 10000;
 export const DEFAULT_ACQUIRE_TIMEOUT = 60000;
@@ -50,6 +54,9 @@ export class RememberedRedis extends Remembered {
 	private tryTo: TryTo;
 	private onCache?: (key: string) => void;
 	private alternativePersistence?: AlternativePersistence;
+	private savingObjects: Record<string, unknown> = {};
+	private waitSaving = false;
+	private savingPromise?: Promise<unknown>;
 
 	constructor(config: RememberedRedisConfig, private readonly redis: Redis) {
 		super(prepareConfig(config));
@@ -113,15 +120,43 @@ export class RememberedRedis extends Remembered {
 		ttl = this.redisTtl?.(result),
 	): Promise<void> {
 		const redisKey = this.getRedisKey(key);
-		let value = (await valueSerializer.serialize(result)) as string | Buffer;
 		const realTtl = ttl || 1;
-		const promises: Promise<unknown>[] = [];
 		if (this.alternativePersistence) {
-			promises.push(this.alternativePersistence.save(key, value, realTtl));
-			value = '1';
+			if (!this.waitSaving) {
+				key = v4();
+				const savingObjects: Record<string, unknown> = {};
+				savingObjects[redisKey] = result;
+				if (this.alternativePersistence.maxSavingDelay) {
+					this.savingObjects = savingObjects;
+					this.waitSaving = true;
+					await delay(this.alternativePersistence.maxSavingDelay);
+					this.waitSaving = false;
+				}
+				this.savingPromise = Promise.all([
+					this.persist(savingObjects, (value) =>
+						this.alternativePersistence!.save(key, value, realTtl),
+					),
+					this.redis.setex(redisKey, realTtl, key),
+				]);
+			} else {
+				this.savingObjects[redisKey] = result;
+			}
+			await this.savingPromise;
+		} else {
+			await this.persist(result, (value) =>
+				this.redis.setex(redisKey, realTtl, value),
+			);
 		}
-		promises.push(this.redis.setex(redisKey, realTtl, value));
-		await Promise.all(promises);
+	}
+
+	private async persist<T>(
+		savingObjects: T,
+		saving: (payload: string | Buffer) => Promise<unknown>,
+	): Promise<unknown> {
+		const value = (await valueSerializer.serialize(savingObjects)) as
+			| string
+			| Buffer;
+		return saving(value);
 	}
 
 	clearCache(key: string) {
@@ -145,9 +180,9 @@ export class RememberedRedis extends Remembered {
 			if (this.alternativePersistence) {
 				cached = await this.alternativePersistence.get(key);
 			}
-      if (cached) {
-			  return valueSerializer.deserialize(cached);
-      }
+			if (cached) {
+				return valueSerializer.deserialize(cached);
+			}
 		}
 		return EMPTY;
 	}
