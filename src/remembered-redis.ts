@@ -164,7 +164,7 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
-		const result = await this.getFromRedis<T>(key);
+		const result = await this.getFromCache<T>(key);
 		if (result !== EMPTY) {
 			this.onCache?.(key);
 			return result;
@@ -172,7 +172,7 @@ export class RememberedRedis extends Remembered {
 		return callback();
 	}
 
-	private async getFromRedis<T>(key: string): Promise<T | typeof EMPTY> {
+	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
     const redisKey = this.getRedisKey(key);
 		let cached: string | Buffer = await this.redis.getBuffer(
 			redisKey,
