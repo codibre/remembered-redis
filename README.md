@@ -126,7 +126,7 @@ export class RedisCache implements AlternativePersistence {
 }
 ```
 
-This may not seem reasonable, but, as you join many results into one can one when maxSavingDelay > 0, you can favor the compression with this, and save a lot of memory in your instance.
+This may not seem reasonable, but, as you join many results into one can when maxSavingDelay > 0, you can favor the compression with this, and save a lot of memory in your instance.
 
 ## License
 
