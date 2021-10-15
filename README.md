@@ -48,7 +48,7 @@ You can make the local ttl be just some seconds or even 0 (for the promise to be
 
 # How to use alternative persistence
 
-Sometimes the size of your data is just too big for redis to be cheap solution, and you need to take some common strategy, like, to save the data in S3 and to use a reference to the saved file in Redis, for ttl control. This package offers a way to apply this strategy seamlessly through the configuration **alternativePersistence**. Here's an example:
+Sometimes the size of your data is just too big for redis to be a cheap solution, and you need to take some common strategy, like, to save the data in S3 and to use a reference to the saved file in Redis, for ttl control. This package offers a way to apply this strategy seamlessly through the configuration **alternativePersistence**. Here's an example:
 
 First, you need to implement the interface **AlternativePersistence**. The implementation below is a valid one to use with S3
 ```ts
@@ -81,10 +81,6 @@ export class S3Cache implements AlternativePersistence {
     const { Body } = await this.s3.getObject(params).promise();
 
     return Body as string | Buffer | undefined;
-  }
-
-  get maxSavingDelay(): number {
-    return this.settings.app.cacheWaitingDelay;
   }
 
   private getObjectKey(key: string): string {
