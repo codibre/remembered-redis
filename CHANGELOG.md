@@ -1,5 +1,8 @@
 
-## 0.7.6
+## 0.7.7
+* 1ea8a1d docs: updating readme
+## v0.7.6
+* 415b2a4 0.7.6
 * b90170e docs: updating readme
 ## v0.7.5
 * 6f09789 0.7.5
