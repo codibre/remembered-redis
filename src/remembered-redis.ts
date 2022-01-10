@@ -174,18 +174,22 @@ export class RememberedRedis extends Remembered {
 
 	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
-		let cached: string | Buffer | undefined = await this.redis.getBuffer(
+		const cached: string | Buffer | undefined = await this.redis.getBuffer(
 			redisKey,
 		);
 		if (cached) {
-			if (!this.alternativePersistence) {
-				return valueSerializer.deserialize(cached);
-			}
-			cached = await this.alternativePersistence.get(cached.toString());
-			if (cached) {
-				const deserialized = await valueSerializer.deserialize(cached);
-				return deserialized[redisKey];
-			}
+			if (this.alternativePersistence) {
+        const alternativeCached = await this.alternativePersistence.get(cached.toString());
+        if (alternativeCached) {
+          const deserialized = await valueSerializer.deserialize(alternativeCached);
+          return deserialized[redisKey];
+        }
+      }
+      try {
+        return await valueSerializer.deserialize(cached);
+      } catch {
+        return EMPTY;
+      }
 		}
 		return EMPTY;
 	}
