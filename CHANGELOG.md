@@ -1,5 +1,8 @@
 
-## 0.7.9
+## 0.7.10
+* 0330115 fix: ignoring too large keys for alternative persistence
+## v0.7.9
+* 8aaa678 0.7.9
 * c505d29 fix: bettering alternative persistence switching resilience
 ## v0.7.8
 * bc1c205 0.7.8
