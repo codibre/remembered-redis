@@ -47,6 +47,7 @@ function prepareConfig(config: RememberedRedisConfig) {
 	return config;
 }
 
+const MAX_ALTERNATIVE_KEY_SIZE = 50;
 export class RememberedRedis extends Remembered {
 	private semaphoreConfig: LockOptions;
 	private redisPrefix: string;
@@ -178,7 +179,7 @@ export class RememberedRedis extends Remembered {
 			redisKey,
 		);
 		if (cached) {
-			if (this.alternativePersistence) {
+			if (this.alternativePersistence && cached.length <= MAX_ALTERNATIVE_KEY_SIZE) {
         const alternativeCached = await this.alternativePersistence.get(cached.toString());
         if (alternativeCached) {
           const deserialized = await valueSerializer.deserialize(alternativeCached);
