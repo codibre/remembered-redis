@@ -1,5 +1,8 @@
 
-## 0.7.8
+## 0.7.9
+* c505d29 fix: bettering alternative persistence switching resilience
+## v0.7.8
+* bc1c205 0.7.8
 * ae82453 docs: updating readme
 ## v0.7.7
 * bee9c21 0.7.7
