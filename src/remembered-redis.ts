@@ -132,6 +132,7 @@ export class RememberedRedis extends Remembered {
 					this.waitSaving = true;
 					await delay(this.alternativePersistence.maxSavingDelay);
 					this.waitSaving = false;
+					this.savingObjects = {};
 				}
 				this.savingPromise = Promise.all([
 					this.persist(savingObjects, (value) =>
@@ -150,7 +151,11 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private *saveKeys(savingObjects: Record<string, unknown>, realTtl: number, key: string) {
+	private *saveKeys(
+		savingObjects: Record<string, unknown>,
+		realTtl: number,
+		key: string,
+	) {
 		for (const redisKey in savingObjects) {
 			if (savingObjects.hasOwnProperty(redisKey)) {
 				yield this.redis.setex(redisKey, realTtl, key);
@@ -187,18 +192,25 @@ export class RememberedRedis extends Remembered {
 			redisKey,
 		);
 		if (cached) {
-			if (this.alternativePersistence && cached.length <= MAX_ALTERNATIVE_KEY_SIZE) {
-        const alternativeCached = await this.alternativePersistence.get(cached.toString());
-        if (alternativeCached) {
-          const deserialized = await valueSerializer.deserialize(alternativeCached);
-          return deserialized[redisKey];
-        }
-      }
-      try {
-        return await valueSerializer.deserialize(cached);
-      } catch {
-        return EMPTY;
-      }
+			if (
+				this.alternativePersistence &&
+				cached.length <= MAX_ALTERNATIVE_KEY_SIZE
+			) {
+				const alternativeCached = await this.alternativePersistence.get(
+					cached.toString(),
+				);
+				if (alternativeCached) {
+					const deserialized = await valueSerializer.deserialize(
+						alternativeCached,
+					);
+					return deserialized[redisKey];
+				}
+			}
+			try {
+				return await valueSerializer.deserialize(cached);
+			} catch {
+				return EMPTY;
+			}
 		}
 		return EMPTY;
 	}
