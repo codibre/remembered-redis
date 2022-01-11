@@ -1,4 +1,4 @@
-[@remembered/redis - v0.7.10](../README.md) / RememberedRedis
+[@remembered/redis - v0.7.11](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -35,6 +35,7 @@
 - [getResult](RememberedRedis.md#getresult)
 - [getSemaphore](RememberedRedis.md#getsemaphore)
 - [persist](RememberedRedis.md#persist)
+- [saveKeys](RememberedRedis.md#savekeys)
 - [tryCache](RememberedRedis.md#trycache)
 - [updateCache](RememberedRedis.md#updatecache)
 - [wrap](RememberedRedis.md#wrap)
@@ -290,6 +291,24 @@ ___
 #### Returns
 
 `Promise`<`unknown`\>
+
+___
+
+### saveKeys
+
+▸ `Private` **saveKeys**(`savingObjects`, `realTtl`, `key`): `Generator`<`Promise`<``"OK"``\>, `void`, `unknown`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `savingObjects` | `Record`<`string`, `unknown`\> |
+| `realTtl` | `number` |
+| `key` | `string` |
+
+#### Returns
+
+`Generator`<`Promise`<``"OK"``\>, `void`, `unknown`\>
 
 ___
 
