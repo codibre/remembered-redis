@@ -132,12 +132,13 @@ export class RememberedRedis extends Remembered {
 					this.waitSaving = true;
 					await delay(this.alternativePersistence.maxSavingDelay);
 					this.waitSaving = false;
+					this.savingObjects = {};
 				}
 				this.savingPromise = Promise.all([
 					this.persist(savingObjects, (value) =>
 						this.alternativePersistence!.save(key, value, realTtl),
 					),
-					this.redis.setex(redisKey, realTtl, key),
+					...this.saveKeys(savingObjects, realTtl, key),
 				]);
 			} else {
 				this.savingObjects[redisKey] = result;
@@ -147,6 +148,18 @@ export class RememberedRedis extends Remembered {
 			await this.persist(result, (value) =>
 				this.redis.setex(redisKey, realTtl, value),
 			);
+		}
+	}
+
+	private *saveKeys(
+		savingObjects: Record<string, unknown>,
+		realTtl: number,
+		key: string,
+	) {
+		for (const redisKey in savingObjects) {
+			if (savingObjects.hasOwnProperty(redisKey)) {
+				yield this.redis.setex(redisKey, realTtl, key);
+			}
 		}
 	}
 
@@ -179,18 +192,25 @@ export class RememberedRedis extends Remembered {
 			redisKey,
 		);
 		if (cached) {
-			if (this.alternativePersistence && cached.length <= MAX_ALTERNATIVE_KEY_SIZE) {
-        const alternativeCached = await this.alternativePersistence.get(cached.toString());
-        if (alternativeCached) {
-          const deserialized = await valueSerializer.deserialize(alternativeCached);
-          return deserialized[redisKey];
-        }
-      }
-      try {
-        return await valueSerializer.deserialize(cached);
-      } catch {
-        return EMPTY;
-      }
+			if (
+				this.alternativePersistence &&
+				cached.length <= MAX_ALTERNATIVE_KEY_SIZE
+			) {
+				const alternativeCached = await this.alternativePersistence.get(
+					cached.toString(),
+				);
+				if (alternativeCached) {
+					const deserialized = await valueSerializer.deserialize(
+						alternativeCached,
+					);
+					return deserialized[redisKey];
+				}
+			}
+			try {
+				return await valueSerializer.deserialize(cached);
+			} catch {
+				return EMPTY;
+			}
 		}
 		return EMPTY;
 	}

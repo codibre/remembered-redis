@@ -1,5 +1,7 @@
 
-## 0.7.10
+## 0.7.11
+* cb77922 fix: saving all keys during alternative persistence
+* 704355b 0.7.10
 * 0330115 fix: ignoring too large keys for alternative persistence
 ## v0.7.9
 * 8aaa678 0.7.9
@@ -24,6 +26,24 @@
 * 9b9d0d8 0.7.3
 * b1a9e5e fix: fixing get from cache and exposing EMPTY
 ## v0.7.2
+## v0.7.10
+* 704355b 0.7.10
+* 0330115 fix: ignoring too large keys for alternative persistence
+* 8aaa678 0.7.9
+* c505d29 fix: bettering alternative persistence switching resilience
+* bc1c205 0.7.8
+* ae82453 docs: updating readme
+* bee9c21 0.7.7
+* 1ea8a1d docs: updating readme
+* 415b2a4 0.7.6
+* b90170e docs: updating readme
+* 6f09789 0.7.5
+* 7ad3eb5 docs: updating readme
+* b31c9ec 0.7.4
+* 7f13fd2 docs: updating readme
+* c3690b5 Merge pull request #2 from Codibre/alternative-persistence
+* 9b9d0d8 0.7.3
+* b1a9e5e fix: fixing get from cache and exposing EMPTY
 * 0ee48a4 0.7.2
 * 702f4a7 fix: treating case where alternativePersistence doesn't found the key
 ## v0.7.1
