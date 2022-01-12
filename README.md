@@ -66,7 +66,7 @@ export class S3Cache implements AlternativePersistence {
       Body: content,
       Bucket: this.bucketName,
       Key: objectKey,
-      ContentType: 'application/json',
+      ContentType: 'application/octet-stream',
     };
 
     await this.s3.putObject(params).promise();
