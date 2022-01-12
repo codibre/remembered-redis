@@ -73,14 +73,18 @@ export class S3Cache implements AlternativePersistence {
   }
 
   async get(key: string): Promise<string | Buffer | undefined> {
-    const params = {
-      Bucket: this.bucketName,
-      Key: this.getObjectKey(key),
-    };
+    try {
+      const params = {
+        Bucket: this.bucketName,
+        Key: this.getObjectKey(key),
+      };
 
-    const { Body } = await this.s3.getObject(params).promise();
+      const { Body } = await this.s3.getObject(params).promise();
 
-    return Body as string | Buffer | undefined;
+      return Body as string | Buffer | undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   private getObjectKey(key: string): string {
