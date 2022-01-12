@@ -1,5 +1,9 @@
 
-## 0.7.11
+## 0.7.12
+* 2d03d9f Merge branch 'master' of github.com:Codibre/remembered-redis
+* c9ab75f docs: updating readme
+* 2853ab7 Merge pull request #3 from Codibre/fix/alternative-persistence-keys
+* ad1756e 0.7.11
 * cb77922 fix: saving all keys during alternative persistence
 * 704355b 0.7.10
 * 0330115 fix: ignoring too large keys for alternative persistence
@@ -26,6 +30,9 @@
 * 9b9d0d8 0.7.3
 * b1a9e5e fix: fixing get from cache and exposing EMPTY
 ## v0.7.2
+## v0.7.11
+* 9785731 0.7.11
+* cb77922 fix: saving all keys during alternative persistence
 ## v0.7.10
 * 704355b 0.7.10
 * 0330115 fix: ignoring too large keys for alternative persistence
