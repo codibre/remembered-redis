@@ -1,12 +1,15 @@
-## 0.7.13
+
+## 0.8.0
+* 4491dfc Merge pull request #4 from Codibre/fix/DeepCloneResult
+* 415f685 chore: version dump
 * d9f7164 fix: Save into cache a copy of result payload instead of the object with your original reference
-## 0.7.12
+* d12f08d 0.7.12
 * 2d03d9f Merge branch 'master' of github.com:Codibre/remembered-redis
 * c9ab75f docs: updating readme
 * 2853ab7 Merge pull request #3 from Codibre/fix/alternative-persistence-keys
-## 0.7.11
+* ad1756e 0.7.11
 * cb77922 fix: saving all keys during alternative persistence
-## 0.7.10
+* 704355b 0.7.10
 * 0330115 fix: ignoring too large keys for alternative persistence
 ## v0.7.9
 * 8aaa678 0.7.9
@@ -31,6 +34,12 @@
 * 9b9d0d8 0.7.3
 * b1a9e5e fix: fixing get from cache and exposing EMPTY
 ## v0.7.2
+## v0.7.12
+* d12f08d 0.7.12
+* 2d03d9f Merge branch 'master' of github.com:Codibre/remembered-redis
+* c9ab75f docs: updating readme
+* 2853ab7 Merge pull request #3 from Codibre/fix/alternative-persistence-keys
+* ad1756e 0.7.11
 ## v0.7.11
 * 9785731 0.7.11
 * cb77922 fix: saving all keys during alternative persistence
