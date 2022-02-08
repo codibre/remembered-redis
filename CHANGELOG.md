@@ -1,4 +1,5 @@
-
+## 0.7.13
+* d9f7164 fix: Save into cache a copy of result payload instead of the object with your original reference
 ## 0.7.12
 * 2d03d9f Merge branch 'master' of github.com:Codibre/remembered-redis
 * c9ab75f docs: updating readme
