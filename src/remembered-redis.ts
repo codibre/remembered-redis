@@ -12,6 +12,7 @@ import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
 import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
+import * as clone from 'clone';
 
 const delay = promisify(setTimeout);
 
@@ -122,11 +123,12 @@ export class RememberedRedis extends Remembered {
 	): Promise<void> {
 		const redisKey = this.getRedisKey(key);
 		const realTtl = ttl || 1;
+		const resultCopy: T = clone(result);
 		if (this.alternativePersistence) {
 			if (!this.waitSaving) {
 				key = v4();
 				const savingObjects: Record<string, unknown> = {};
-				savingObjects[redisKey] = result;
+				savingObjects[redisKey] = resultCopy;
 				if (this.alternativePersistence.maxSavingDelay) {
 					this.savingObjects = savingObjects;
 					this.waitSaving = true;
@@ -141,11 +143,11 @@ export class RememberedRedis extends Remembered {
 					...this.saveKeys(savingObjects, realTtl, key),
 				]);
 			} else {
-				this.savingObjects[redisKey] = result;
+				this.savingObjects[redisKey] = resultCopy;
 			}
 			await this.savingPromise;
 		} else {
-			await this.persist(result, (value) =>
+			await this.persist(resultCopy, (value) =>
 				this.redis.setex(redisKey, realTtl, value),
 			);
 		}

@@ -3,9 +3,9 @@
 * 2d03d9f Merge branch 'master' of github.com:Codibre/remembered-redis
 * c9ab75f docs: updating readme
 * 2853ab7 Merge pull request #3 from Codibre/fix/alternative-persistence-keys
-* ad1756e 0.7.11
+## 0.7.11
 * cb77922 fix: saving all keys during alternative persistence
-* 704355b 0.7.10
+## 0.7.10
 * 0330115 fix: ignoring too large keys for alternative persistence
 ## v0.7.9
 * 8aaa678 0.7.9
