@@ -1,4 +1,4 @@
-[@remembered/redis - v0.7.12](../README.md) / AlternativePersistence
+[@remembered/redis - v0.7.13](../README.md) / AlternativePersistence
 
 # Interface: AlternativePersistence
 
