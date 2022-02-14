@@ -1,4 +1,4 @@
-[@remembered/redis - v0.8.2](../README.md) / RememberedRedis
+[@remembered/redis - v0.8.3](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -359,7 +359,7 @@ ___
 
 ### updateCache
 
-▸ **updateCache**<`T`\>(`key`, `result`, `ttl?`): `Promise`<`void`\>
+▸ **updateCache**<`T`\>(`cacheKey`, `result`, `ttl?`): `Promise`<`void`\>
 
 #### Type parameters
 
@@ -371,7 +371,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `key` | `string` |
+| `cacheKey` | `string` |
 | `result` | `T` |
 | `ttl` | `undefined` \| `number` |
 

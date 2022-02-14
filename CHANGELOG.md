@@ -1,5 +1,8 @@
 
-## 0.8.2
+## 0.8.3
+* 3754617 fixing key value
+## v0.8.2
+* 24b82ef 0.8.2
 * 0740a1d fix: passing also ke on error event
 ## v0.8.1
 * 20f5d28 0.8.1
