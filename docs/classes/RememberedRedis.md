@@ -1,4 +1,4 @@
-[@remembered/redis - v0.8.0](../README.md) / RememberedRedis
+[@remembered/redis - v0.8.1](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -18,6 +18,7 @@
 
 - [alternativePersistence](RememberedRedis.md#alternativepersistence)
 - [onCache](RememberedRedis.md#oncache)
+- [onError](RememberedRedis.md#onerror)
 - [redisPrefix](RememberedRedis.md#redisprefix)
 - [redisTtl](RememberedRedis.md#redisttl)
 - [savingObjects](RememberedRedis.md#savingobjects)
@@ -82,6 +83,26 @@ ___
 ##### Returns
 
 `void`
+
+___
+
+### onError
+
+• `Private` `Optional` **onError**: (`err`: `Error`) => `any`
+
+#### Type declaration
+
+▸ (`err`): `any`
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `err` | `Error` |
+
+##### Returns
+
+`any`
 
 ___
 

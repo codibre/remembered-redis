@@ -1,5 +1,9 @@
 
-## 0.8.0
+## 0.8.1
+* 5d9a227 Merge pull request #5 from Codibre/try-catch
+* cec16a1 fix: include try-catch on updateCache function
+## v0.8.0
+* eb01e33 0.8.0
 * 4491dfc Merge pull request #4 from Codibre/fix/DeepCloneResult
 * 415f685 chore: version dump
 * d9f7164 fix: Save into cache a copy of result payload instead of the object with your original reference

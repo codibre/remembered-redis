@@ -1,4 +1,4 @@
-[@remembered/redis - v0.8.0](../README.md) / RememberedRedisConfig
+[@remembered/redis - v0.8.1](../README.md) / RememberedRedisConfig
 
 # Interface: RememberedRedisConfig
 
@@ -25,6 +25,7 @@
 ### Methods
 
 - [onCache](RememberedRedisConfig.md#oncache)
+- [onError](RememberedRedisConfig.md#onerror)
 - [onReused](RememberedRedisConfig.md#onreused)
 
 ## Properties
@@ -102,6 +103,22 @@ RememberedConfig.ttl
 #### Returns
 
 `void`
+
+___
+
+### onError
+
+▸ `Optional` **onError**(`err`): `any`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `err` | `Error` |
+
+#### Returns
+
+`any`
 
 ___
 
