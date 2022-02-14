@@ -30,7 +30,7 @@ export interface RememberedRedisConfig extends RememberedConfig {
 	refreshInterval?: number;
 	logError?: LogError;
 	onCache?: (key: string) => void;
-	onError?: (err: Error) => any;
+	onError?: (key: string, err: Error) => any;
 	/**
 	 * When informed, redis is used only for ttl control, but the real data is persisted using these methods
 	 */

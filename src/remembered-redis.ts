@@ -55,7 +55,7 @@ export class RememberedRedis extends Remembered {
 	private redisTtl?: <T>(r: T) => number;
 	private tryTo: TryTo;
 	private onCache?: (key: string) => void;
-	private onError?: (err: Error) => any;
+	private onError?: (key: string, err: Error) => any;
 	private alternativePersistence?: AlternativePersistence;
 	private savingObjects: Record<string, unknown> = {};
 	private waitSaving = false;
@@ -158,7 +158,7 @@ export class RememberedRedis extends Remembered {
 			if (!this.onError) {
 				throw err;
 			}
-			this.onError(err as Error);
+			this.onError(key, err as Error);
 		}
 	}
 
