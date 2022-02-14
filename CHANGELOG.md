@@ -1,5 +1,8 @@
 
-## 0.8.1
+## 0.8.2
+* 0740a1d fix: passing also ke on error event
+## v0.8.1
+* 20f5d28 0.8.1
 * 5d9a227 Merge pull request #5 from Codibre/try-catch
 * cec16a1 fix: include try-catch on updateCache function
 ## v0.8.0

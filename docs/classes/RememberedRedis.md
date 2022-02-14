@@ -1,4 +1,4 @@
-[@remembered/redis - v0.8.1](../README.md) / RememberedRedis
+[@remembered/redis - v0.8.2](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -88,16 +88,17 @@ ___
 
 ### onError
 
-• `Private` `Optional` **onError**: (`err`: `Error`) => `any`
+• `Private` `Optional` **onError**: (`key`: `string`, `err`: `Error`) => `any`
 
 #### Type declaration
 
-▸ (`err`): `any`
+▸ (`key`, `err`): `any`
 
 ##### Parameters
 
 | Name | Type |
 | :------ | :------ |
+| `key` | `string` |
 | `err` | `Error` |
 
 ##### Returns

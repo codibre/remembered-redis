@@ -1,4 +1,4 @@
-[@remembered/redis - v0.8.1](../README.md) / RememberedRedisConfig
+[@remembered/redis - v0.8.2](../README.md) / RememberedRedisConfig
 
 # Interface: RememberedRedisConfig
 
@@ -108,12 +108,13 @@ ___
 
 ### onError
 
-▸ `Optional` **onError**(`err`): `any`
+▸ `Optional` **onError**(`key`, `err`): `any`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
+| `key` | `string` |
 | `err` | `Error` |
 
 #### Returns
