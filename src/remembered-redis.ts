@@ -55,6 +55,7 @@ export class RememberedRedis extends Remembered {
 	private redisTtl?: <T>(r: T) => number;
 	private tryTo: TryTo;
 	private onCache?: (key: string) => void;
+	private onError?: (err: Error) => any;
 	private alternativePersistence?: AlternativePersistence;
 	private savingObjects: Record<string, unknown> = {};
 	private waitSaving = false;
@@ -70,6 +71,7 @@ export class RememberedRedis extends Remembered {
 		this.semaphoreConfig = getSemaphoreConfig(config);
 		this.redisPrefix = getRedisPrefix(config.redisPrefix);
 		this.onCache = config.onCache;
+		this.onError = config.onError;
 		this.alternativePersistence = config.alternativePersistence;
 	}
 
@@ -121,35 +123,42 @@ export class RememberedRedis extends Remembered {
 		result: T,
 		ttl = this.redisTtl?.(result),
 	): Promise<void> {
-		const redisKey = this.getRedisKey(key);
-		const realTtl = ttl || 1;
-		const resultCopy: T = clone(result);
-		if (this.alternativePersistence) {
-			if (!this.waitSaving) {
-				key = v4();
-				const savingObjects: Record<string, unknown> = {};
-				savingObjects[redisKey] = resultCopy;
-				if (this.alternativePersistence.maxSavingDelay) {
-					this.savingObjects = savingObjects;
-					this.waitSaving = true;
-					await delay(this.alternativePersistence.maxSavingDelay);
-					this.waitSaving = false;
-					this.savingObjects = {};
+		try {
+			const redisKey = this.getRedisKey(key);
+			const realTtl = ttl || 1;
+			const resultCopy: T = clone(result);
+			if (this.alternativePersistence) {
+				if (!this.waitSaving) {
+					key = v4();
+					const savingObjects: Record<string, unknown> = {};
+					savingObjects[redisKey] = resultCopy;
+					if (this.alternativePersistence.maxSavingDelay) {
+						this.savingObjects = savingObjects;
+						this.waitSaving = true;
+						await delay(this.alternativePersistence.maxSavingDelay);
+						this.waitSaving = false;
+						this.savingObjects = {};
+					}
+					this.savingPromise = Promise.all([
+						this.persist(savingObjects, (value) =>
+							this.alternativePersistence!.save(key, value, realTtl),
+						),
+						...this.saveKeys(savingObjects, realTtl, key),
+					]);
+				} else {
+					this.savingObjects[redisKey] = resultCopy;
 				}
-				this.savingPromise = Promise.all([
-					this.persist(savingObjects, (value) =>
-						this.alternativePersistence!.save(key, value, realTtl),
-					),
-					...this.saveKeys(savingObjects, realTtl, key),
-				]);
+				await this.savingPromise;
 			} else {
-				this.savingObjects[redisKey] = resultCopy;
+				await this.persist(resultCopy, (value) =>
+					this.redis.setex(redisKey, realTtl, value),
+				);
 			}
-			await this.savingPromise;
-		} else {
-			await this.persist(resultCopy, (value) =>
-				this.redis.setex(redisKey, realTtl, value),
-			);
+		} catch (err) {
+			if (!this.onError) {
+				throw err;
+			}
+			this.onError(err as Error);
 		}
 	}
 
