@@ -55,7 +55,7 @@ export class RememberedRedis extends Remembered {
 	private redisTtl?: <T>(r: T) => number;
 	private tryTo: TryTo;
 	private onCache?: (key: string) => void;
-	private onError?: (err: Error) => any;
+	private onError?: (key: string, err: Error) => any;
 	private alternativePersistence?: AlternativePersistence;
 	private savingObjects: Record<string, unknown> = {};
 	private waitSaving = false;
@@ -119,17 +119,17 @@ export class RememberedRedis extends Remembered {
 	}
 
 	async updateCache<T>(
-		key: string,
+		cacheKey: string,
 		result: T,
 		ttl = this.redisTtl?.(result),
 	): Promise<void> {
 		try {
-			const redisKey = this.getRedisKey(key);
+			const redisKey = this.getRedisKey(cacheKey);
 			const realTtl = ttl || 1;
 			const resultCopy: T = clone(result);
 			if (this.alternativePersistence) {
 				if (!this.waitSaving) {
-					key = v4();
+					const key = v4();
 					const savingObjects: Record<string, unknown> = {};
 					savingObjects[redisKey] = resultCopy;
 					if (this.alternativePersistence.maxSavingDelay) {
@@ -158,7 +158,7 @@ export class RememberedRedis extends Remembered {
 			if (!this.onError) {
 				throw err;
 			}
-			this.onError(err as Error);
+			this.onError(cacheKey, err as Error);
 		}
 	}
 

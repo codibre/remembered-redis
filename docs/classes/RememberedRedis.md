@@ -1,4 +1,4 @@
-[@remembered/redis - v0.8.1](../README.md) / RememberedRedis
+[@remembered/redis - v0.8.3](../README.md) / RememberedRedis
 
 # Class: RememberedRedis
 
@@ -88,16 +88,17 @@ ___
 
 ### onError
 
-• `Private` `Optional` **onError**: (`err`: `Error`) => `any`
+• `Private` `Optional` **onError**: (`key`: `string`, `err`: `Error`) => `any`
 
 #### Type declaration
 
-▸ (`err`): `any`
+▸ (`key`, `err`): `any`
 
 ##### Parameters
 
 | Name | Type |
 | :------ | :------ |
+| `key` | `string` |
 | `err` | `Error` |
 
 ##### Returns
@@ -358,7 +359,7 @@ ___
 
 ### updateCache
 
-▸ **updateCache**<`T`\>(`key`, `result`, `ttl?`): `Promise`<`void`\>
+▸ **updateCache**<`T`\>(`cacheKey`, `result`, `ttl?`): `Promise`<`void`\>
 
 #### Type parameters
 
@@ -370,7 +371,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `key` | `string` |
+| `cacheKey` | `string` |
 | `result` | `T` |
 | `ttl` | `undefined` \| `number` |
 
