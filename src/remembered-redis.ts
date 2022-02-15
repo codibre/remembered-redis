@@ -114,7 +114,10 @@ export class RememberedRedis extends Remembered {
 			this.redis,
 			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
 			1,
-			this.semaphoreConfig,
+			{
+				...this.semaphoreConfig,
+				onLockLost: () => undefined,
+			},
 		);
 	}
 
