@@ -1,5 +1,8 @@
 
-## 0.8.3
+## 0.8.4
+* 965f63b fix: ignoring onLockLost error
+## v0.8.3
+* 44467d3 0.8.3
 * 3754617 fixing key value
 ## v0.8.2
 * 24b82ef 0.8.2
