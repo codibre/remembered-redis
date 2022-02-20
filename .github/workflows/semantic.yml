@@ -7,6 +7,9 @@ on:
 jobs:
   semantic:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{secrets.NPM_TOKEN}}
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
@@ -17,9 +20,6 @@ jobs:
       - name: Redis Server in GitHub Actions
         uses: supercharge/redis-github-action@1.1.0
       - run: npm test
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
       - uses: actions/setup-node@v1
         with:
           node-version: "16.x"
