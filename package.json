@@ -22,8 +22,6 @@
     "test:coverage": "jest test/unit --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest test/e2e",
-    "version": "scripts/prepare $npm_package_version && npm run doc && git add .",
-    "postversion": "git push && git push --tags",
     "clear": "npm run clear:build && npm run clear:modules",
     "clear:build": "del-cli ./dist",
     "clear:modules": "del-cli ./node_modules",
