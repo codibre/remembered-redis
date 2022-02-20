@@ -20,5 +20,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
       - run: npx semantic-release
       - run: npm publish
