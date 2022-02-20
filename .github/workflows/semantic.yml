@@ -11,9 +11,11 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
         with:
-          node-version: "12.x"
+          node-version: "10.x"
       - run: npm ci
       - run: npm run build --if-present
+      - name: Redis Server in GitHub Actions
+        uses: supercharge/redis-github-action@1.1.0
       - run: npm test
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
