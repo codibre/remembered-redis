@@ -28,4 +28,4 @@ jobs:
           node-version: "16.x"
       - run: npm i -g @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/github @semantic-release/npm @semantic-release/release-notes-generator semantic-release
       - run: npx semantic-release --ci
-      - run: npm publish
+      - run: git push
