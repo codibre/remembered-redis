@@ -14,6 +14,8 @@ jobs:
       CI: true
     steps:
       - uses: actions/checkout@master
+        with:
+          token: ${{ secrets.GH_TOKEN }}
       - uses: actions/setup-node@v1
         with:
           node-version: "10.x"
@@ -27,5 +29,10 @@ jobs:
         with:
           node-version: "16.x"
       - run: npm i -g @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/git @semantic-release/github @semantic-release/npm @semantic-release/release-notes-generator semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+          HUSKY: 0
+          CI: true
       - run: npx semantic-release --ci
       - run: git push
