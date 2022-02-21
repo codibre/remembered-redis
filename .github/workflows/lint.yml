@@ -8,6 +8,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      HUSKY: 0
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -15,4 +18,10 @@ jobs:
       - name: install
         run: npm ci
       - name: Lint
-        run: npm run lint
+        run: |
+          git config --global user.email "tos.oliveira2@gmail.com"
+          git config --global user.name "codibrebot"
+          npm run lint:fix
+          git add .
+          git commit -m 'refactor: fixing lint'
+          git push origin HEAD
