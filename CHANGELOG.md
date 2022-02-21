@@ -1,3 +1,10 @@
+## [0.9.5](https://github.com/codibre/remembered-redis/compare/v0.9.4...v0.9.5) (2022-02-21)
+
+
+### Bug Fixes
+
+* fixing semantic-release automation ([7300ec3](https://github.com/codibre/remembered-redis/commit/7300ec39622890e8bbacbb8e3c96e7f51358a57b))
+* fixing semantic-release automation again ([eaee247](https://github.com/codibre/remembered-redis/commit/eaee247bf85ae65dd929e7a11c639dba4c4dad9e))
 
 ## 0.8.4
 * 965f63b fix: ignoring onLockLost error
