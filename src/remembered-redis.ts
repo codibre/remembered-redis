@@ -10,6 +10,7 @@ import {
 import { getSemaphoreConfig } from './get-semaphore-config';
 import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
+import { gzipValueSerializer } from './gzip-value-serializer';
 import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
 import * as clone from 'clone';
@@ -61,7 +62,10 @@ export class RememberedRedis extends Remembered {
 	private waitSaving = false;
 	private savingPromise?: Promise<unknown>;
 
-	constructor(config: RememberedRedisConfig, private readonly redis: Redis) {
+	constructor(
+		private config: RememberedRedisConfig,
+		private readonly redis: Redis,
+	) {
 		super(prepareConfig(config));
 		this.redisTtl =
 			typeof config.redisTtl === 'number'
@@ -177,11 +181,15 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
+	private get serializer() {
+		return this.config.noCompress ? valueSerializer : gzipValueSerializer;
+	}
+
 	private async persist<T>(
 		savingObjects: T,
 		saving: (payload: string | Buffer) => Promise<unknown>,
 	): Promise<unknown> {
-		const value = (await valueSerializer.serialize(savingObjects)) as
+		const value = (await this.serializer.serialize(savingObjects)) as
 			| string
 			| Buffer;
 		return saving(value);
@@ -214,14 +222,14 @@ export class RememberedRedis extends Remembered {
 					cached.toString(),
 				);
 				if (alternativeCached) {
-					const deserialized = await valueSerializer.deserialize(
+					const deserialized = await this.serializer.deserialize(
 						alternativeCached,
 					);
 					return deserialized[redisKey];
 				}
 			}
 			try {
-				return await valueSerializer.deserialize(cached);
+				return await this.serializer.deserialize(cached);
 			} catch {
 				return EMPTY;
 			}

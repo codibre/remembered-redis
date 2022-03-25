@@ -3,7 +3,7 @@ import Redis = require('ioredis');
 import { RememberedRedis } from '../../src';
 import { promisify } from 'util';
 import { v4 } from 'uuid';
-import { valueSerializer } from '../../src/value-serializer';
+import { gzipValueSerializer } from '../../src/gzip-value-serializer';
 
 const delay = promisify(setTimeout);
 
@@ -47,7 +47,7 @@ describe('index.ts', () => {
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
 		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
-			await valueSerializer.serialize('expected result'),
+			await gzipValueSerializer.serialize('expected result'),
 		);
 		await delay(5);
 		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
@@ -64,7 +64,7 @@ describe('index.ts', () => {
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
 		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
-			await valueSerializer.serialize('expected result'),
+			await gzipValueSerializer.serialize('expected result'),
 		);
 		await delay(7);
 		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
@@ -135,7 +135,7 @@ describe('index.ts', () => {
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
 		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
-			await valueSerializer.serialize('expected result'),
+			await gzipValueSerializer.serialize('expected result'),
 		);
 	});
 
@@ -155,7 +155,7 @@ describe('index.ts', () => {
 		expect(callback).toHaveCallsLike();
 		expect(result).toBe('cached result');
 		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
-			await valueSerializer.serialize('cached result'),
+			await gzipValueSerializer.serialize('cached result'),
 		);
 	});
 
@@ -188,7 +188,7 @@ describe('index.ts', () => {
 		expect(callback).toHaveCallsLike([]);
 		expect(result).toBe('expected result');
 		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
-			await valueSerializer.serialize('expected result'),
+			await gzipValueSerializer.serialize('expected result'),
 		);
 		await delay(5);
 		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
