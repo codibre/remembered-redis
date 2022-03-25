@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/codibre/remembered-redis/compare/v0.9.5...v0.10.0) (2022-03-25)
+
+
+### Features
+
+* creating parameter to disable compression ([#10](https://github.com/codibre/remembered-redis/issues/10)) ([3ff05dc](https://github.com/codibre/remembered-redis/commit/3ff05dcb783b20d0ac1efc70aebe56fcfa1241c8))
+
 ## [0.9.5](https://github.com/codibre/remembered-redis/compare/v0.9.4...v0.9.5) (2022-02-21)
 
 
