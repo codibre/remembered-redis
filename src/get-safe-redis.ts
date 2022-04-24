@@ -26,18 +26,19 @@ export function getSafeRedis(
 			const CircuitBreakerCls = require('opossum') as typeof CircuitBreaker;
 			const breakerOptions: CircuitBreaker.Options = {
 				timeout,
+        group: v4(),
 			};
 			const getBufferCb = new CircuitBreakerCls(
 				raceFactory(timeout, source.getBuffer.bind(source)),
-				{ ...breakerOptions, group: v4() },
+				breakerOptions,
 			);
 			const setexCb = new CircuitBreakerCls(
 				raceFactory(timeout, source.setex.bind(source)),
-				{ ...breakerOptions, group: v4() },
+				breakerOptions,
 			);
 			const delCb = new CircuitBreakerCls(
 				raceFactory(timeout, source.del.bind(source)),
-				{ ...breakerOptions, group: v4() },
+				breakerOptions,
 			);
 			const map = new Map([
 				['getBuffer', getBufferCb.fire.bind(getBufferCb)],
