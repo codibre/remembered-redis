@@ -27,7 +27,9 @@
           "-r", "ts-node/register",
           "${workspaceRoot}/node_modules/jest/bin/jest",
           "test/unit",
-          "--runInBand"
+          "--runInBand",
+          "---testTimeout=99999999",
+          "---forceExit"
         ],
         "outputCapture": "std"
       },
@@ -41,7 +43,9 @@
           "-r", "ts-node/register",
           "${workspaceRoot}/node_modules/jest/bin/jest",
           "test/e2e",
-          "--runInBand"
+          "--runInBand",
+          "---testTimeout=99999999",
+          "---forceExit"
         ],
         "outputCapture": "std"
       }

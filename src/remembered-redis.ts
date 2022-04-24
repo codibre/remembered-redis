@@ -14,6 +14,7 @@ import { gzipValueSerializer } from './gzip-value-serializer';
 import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
 import * as clone from 'clone';
+import { getSafeRedis } from './get-safe-redis';
 
 const delay = promisify(setTimeout);
 
@@ -61,11 +62,9 @@ export class RememberedRedis extends Remembered {
 	private savingObjects: Record<string, unknown> = {};
 	private waitSaving = false;
 	private savingPromise?: Promise<unknown>;
+	private readonly redis: Redis;
 
-	constructor(
-		private config: RememberedRedisConfig,
-		private readonly redis: Redis,
-	) {
+	constructor(private config: RememberedRedisConfig, redis: Redis) {
 		super(prepareConfig(config));
 		this.redisTtl =
 			typeof config.redisTtl === 'number'
@@ -77,6 +76,7 @@ export class RememberedRedis extends Remembered {
 		this.onCache = config.onCache;
 		this.onError = config.onError;
 		this.alternativePersistence = config.alternativePersistence;
+		this.redis = getSafeRedis(redis, config.onError, config.redisTimeout);
 	}
 
 	get<T>(
@@ -192,7 +192,11 @@ export class RememberedRedis extends Remembered {
 		const value = (await this.serializer.serialize(savingObjects)) as
 			| string
 			| Buffer;
-		return saving(value);
+		try {
+			return await saving(value);
+		} catch (err) {
+			this.onError?.('*', err as Error);
+		}
 	}
 
 	clearCache(key: string) {
@@ -210,29 +214,33 @@ export class RememberedRedis extends Remembered {
 
 	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
-		const cached: string | Buffer | undefined = await this.redis.getBuffer(
-			redisKey,
-		);
-		if (cached) {
-			if (
-				this.alternativePersistence &&
-				cached.length <= MAX_ALTERNATIVE_KEY_SIZE
-			) {
-				const alternativeCached = await this.alternativePersistence.get(
-					cached.toString(),
-				);
-				if (alternativeCached) {
-					const deserialized = await this.serializer.deserialize(
-						alternativeCached,
+		try {
+			const cached: string | Buffer | undefined = await this.redis.getBuffer(
+				redisKey,
+			);
+			if (cached) {
+				if (
+					this.alternativePersistence &&
+					cached.length <= MAX_ALTERNATIVE_KEY_SIZE
+				) {
+					const alternativeCached = await this.alternativePersistence.get(
+						cached.toString(),
 					);
-					return deserialized[redisKey];
+					if (alternativeCached) {
+						const deserialized = await this.serializer.deserialize(
+							alternativeCached,
+						);
+						return deserialized[redisKey];
+					}
+				}
+				try {
+					return await this.serializer.deserialize(cached);
+				} catch {
+					return EMPTY;
 				}
 			}
-			try {
-				return await this.serializer.deserialize(cached);
-			} catch {
-				return EMPTY;
-			}
+		} catch (err) {
+			this.onError?.(key, err as Error);
 		}
 		return EMPTY;
 	}
