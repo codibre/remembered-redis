@@ -26,7 +26,7 @@ export function getSafeRedis(
 			const CircuitBreakerCls = require('opossum') as typeof CircuitBreaker;
 			const breakerOptions: CircuitBreaker.Options = {
 				timeout,
-        group: v4(),
+				group: v4(),
 			};
 			const getBufferCb = new CircuitBreakerCls(
 				raceFactory(timeout, source.getBuffer.bind(source)),

@@ -158,7 +158,7 @@ export class RememberedRedis extends Remembered {
 				await this.savingPromise;
 			} else {
 				await this.persist(resultCopy, (value) =>
-					this.redis.setex(redisKey, realTtl, value),
+					this.try(redisKey, () => this.redis.setex(redisKey, realTtl, value)),
 				);
 			}
 		} catch (err) {
@@ -169,6 +169,14 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
+	private async try<T>(key: string, cb: () => Promise<T>) {
+		try {
+			return await cb();
+		} catch (err) {
+			this.onError?.(key, err as Error);
+		}
+	}
+
 	private *saveKeys(
 		savingObjects: Record<string, unknown>,
 		realTtl: number,
@@ -176,7 +184,9 @@ export class RememberedRedis extends Remembered {
 	) {
 		for (const redisKey in savingObjects) {
 			if (savingObjects.hasOwnProperty(redisKey)) {
-				yield this.redis.setex(redisKey, realTtl, key);
+				yield this.try(redisKey, () =>
+					this.redis.setex(redisKey, realTtl, key),
+				);
 			}
 		}
 	}
@@ -192,15 +202,11 @@ export class RememberedRedis extends Remembered {
 		const value = (await this.serializer.serialize(savingObjects)) as
 			| string
 			| Buffer;
-		try {
-			return await saving(value);
-		} catch (err) {
-			this.onError?.('*', err as Error);
-		}
+		return await saving(value);
 	}
 
-	clearCache(key: string) {
-		return this.redis.del(this.getRedisKey(key));
+	async clearCache(key: string) {
+		return this.try(key, () => this.redis.del(this.getRedisKey(key)));
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
@@ -214,33 +220,29 @@ export class RememberedRedis extends Remembered {
 
 	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
-		try {
-			const cached: string | Buffer | undefined = await this.redis.getBuffer(
-				redisKey,
-			);
-			if (cached) {
-				if (
-					this.alternativePersistence &&
-					cached.length <= MAX_ALTERNATIVE_KEY_SIZE
-				) {
-					const alternativeCached = await this.alternativePersistence.get(
-						cached.toString(),
+		const cached: string | Buffer | undefined = await this.try(redisKey, () =>
+			this.redis.getBuffer(redisKey),
+		);
+		if (cached) {
+			if (
+				this.alternativePersistence &&
+				cached.length <= MAX_ALTERNATIVE_KEY_SIZE
+			) {
+				const alternativeCached = await this.alternativePersistence.get(
+					cached.toString(),
+				);
+				if (alternativeCached) {
+					const deserialized = await this.serializer.deserialize(
+						alternativeCached,
 					);
-					if (alternativeCached) {
-						const deserialized = await this.serializer.deserialize(
-							alternativeCached,
-						);
-						return deserialized[redisKey];
-					}
-				}
-				try {
-					return await this.serializer.deserialize(cached);
-				} catch {
-					return EMPTY;
+					return deserialized[redisKey];
 				}
 			}
-		} catch (err) {
-			this.onError?.(key, err as Error);
+			try {
+				return await this.serializer.deserialize(cached);
+			} catch {
+				return EMPTY;
+			}
 		}
 		return EMPTY;
 	}
