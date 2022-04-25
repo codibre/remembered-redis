@@ -44,6 +44,7 @@ export function getSafeRedis(
 		try {
 			const breakerOptions: CircuitBreaker.Options = {
 				timeout,
+				volumeThreshold: 30,
 				group: v4(),
 			};
 			const map = new Map<UsedRedisMethods, Function>(
