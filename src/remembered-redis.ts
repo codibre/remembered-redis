@@ -14,6 +14,7 @@ import { gzipValueSerializer } from './gzip-value-serializer';
 import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
 import * as clone from 'clone';
+import { getSafeRedis } from './get-safe-redis';
 
 const delay = promisify(setTimeout);
 
@@ -61,11 +62,9 @@ export class RememberedRedis extends Remembered {
 	private savingObjects: Record<string, unknown> = {};
 	private waitSaving = false;
 	private savingPromise?: Promise<unknown>;
+	private readonly redis: Redis;
 
-	constructor(
-		private config: RememberedRedisConfig,
-		private readonly redis: Redis,
-	) {
+	constructor(private config: RememberedRedisConfig, redis: Redis) {
 		super(prepareConfig(config));
 		this.redisTtl =
 			typeof config.redisTtl === 'number'
@@ -77,6 +76,7 @@ export class RememberedRedis extends Remembered {
 		this.onCache = config.onCache;
 		this.onError = config.onError;
 		this.alternativePersistence = config.alternativePersistence;
+		this.redis = getSafeRedis(redis, config.onError, config.redisTimeout);
 	}
 
 	get<T>(
@@ -158,7 +158,7 @@ export class RememberedRedis extends Remembered {
 				await this.savingPromise;
 			} else {
 				await this.persist(resultCopy, (value) =>
-					this.redis.setex(redisKey, realTtl, value),
+					this.try(redisKey, () => this.redis.setex(redisKey, realTtl, value)),
 				);
 			}
 		} catch (err) {
@@ -169,6 +169,14 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
+	private async try<T>(key: string, cb: () => Promise<T>) {
+		try {
+			return await cb();
+		} catch (err) {
+			this.onError?.(key, err as Error);
+		}
+	}
+
 	private *saveKeys(
 		savingObjects: Record<string, unknown>,
 		realTtl: number,
@@ -176,7 +184,9 @@ export class RememberedRedis extends Remembered {
 	) {
 		for (const redisKey in savingObjects) {
 			if (savingObjects.hasOwnProperty(redisKey)) {
-				yield this.redis.setex(redisKey, realTtl, key);
+				yield this.try(redisKey, () =>
+					this.redis.setex(redisKey, realTtl, key),
+				);
 			}
 		}
 	}
@@ -192,11 +202,11 @@ export class RememberedRedis extends Remembered {
 		const value = (await this.serializer.serialize(savingObjects)) as
 			| string
 			| Buffer;
-		return saving(value);
+		return await saving(value);
 	}
 
-	clearCache(key: string) {
-		return this.redis.del(this.getRedisKey(key));
+	async clearCache(key: string) {
+		return this.try(key, () => this.redis.del(this.getRedisKey(key)));
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
@@ -210,8 +220,8 @@ export class RememberedRedis extends Remembered {
 
 	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
-		const cached: string | Buffer | undefined = await this.redis.getBuffer(
-			redisKey,
+		const cached: string | Buffer | undefined = await this.try(redisKey, () =>
+			this.redis.getBuffer(redisKey),
 		);
 		if (cached) {
 			if (

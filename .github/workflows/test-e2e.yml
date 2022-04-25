@@ -1,0 +1,25 @@
+# This is a basic workflow to help you get started with Actions
+
+name: test
+on:
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: install
+        run: npm ci
+      - name: Redis Server in GitHub Actions
+        uses: supercharge/redis-github-action@1.1.0
+      - name: 'Test'
+        run: npm run test:e2e

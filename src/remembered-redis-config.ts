@@ -29,6 +29,7 @@ export interface RememberedRedisConfig extends RememberedConfig {
 	retryInterval?: number;
 	refreshInterval?: number;
 	noCompress?: boolean;
+	redisTimeout?: number;
 	logError?: LogError;
 	onCache?: (key: string) => void;
 	onError?: (key: string, err: Error) => any;
