@@ -1,7 +1,7 @@
 {
   "name": "@remembered/redis",
   "description": "A simple semaphore/cache lib using redis, extended from remembered package",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "author": {
     "name": "Thiago O Santos <tos.oliveira@gmail.com>"
   },
@@ -53,7 +53,9 @@
       "./src/**/*.ts"
     ],
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["./test/setup.ts"]
+    "setupFilesAfterEnv": [
+      "./test/setup.ts"
+    ]
   },
   "directories": {
     "test": "test"
