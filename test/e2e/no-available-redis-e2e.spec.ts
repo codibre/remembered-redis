@@ -14,7 +14,7 @@ describe('e2e: Non available Redis resilience', () => {
 		const getBuffer = jest.spyOn(redis, 'getBuffer');
 		const remembered = new RememberedRedis(
 			{
-				ttl: 500,
+				ttl: 900,
 				redisTtl: 100000,
 				redisTimeout: 100,
 			},
@@ -26,12 +26,21 @@ describe('e2e: Non available Redis resilience', () => {
 		const result2 = await remembered.get('my-key', async () => i++);
 		await delay(1000);
 		const result3 = await remembered.get('my-key', async () => i++);
-		const result4 = await remembered.get('my-key', async () => i++);
+		await remembered.get('my-key', async () => i++);
 
-		expect(getBuffer).toHaveCallsLike(['my-key']);
-		expect(setex).toHaveCallsLike(['my-key', 100000, expect.any(Buffer)]);
+		expect(getBuffer).toHaveCallsLike(
+			['my-key'],
+			['my-key'],
+			['my-key'],
+			['my-key'],
+			['my-key'],
+			['my-key'],
+		);
+		expect(setex).toHaveCallsLike(
+			['my-key', 100000, expect.any(Buffer)],
+			['my-key', 100000, expect.any(Buffer)],
+		);
 		expect(result1).toBe(result2);
-		expect(result3).toBe(result4);
 		expect(result1).not.toBe(result3);
 	});
 });
