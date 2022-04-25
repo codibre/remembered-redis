@@ -1,21 +1,24 @@
 import { promisify } from 'util';
-import { RememberedRedis } from './../../src/remembered-redis';
+import { RememberedRedis } from '../../src/remembered-redis';
 import Redis = require('ioredis');
 
 const delay = promisify(setTimeout);
 
-describe('Non available Redis resilience', () => {
+describe('e2e: Non available Redis resilience', () => {
 	it('should not throw an error when redis is not available', async () => {
+		const redis = new Redis(8888, 'localhost', {
+			commandTimeout: 100,
+			maxRetriesPerRequest: 1,
+		});
+		const setex = jest.spyOn(redis, 'setex');
+		const getBuffer = jest.spyOn(redis, 'getBuffer');
 		const remembered = new RememberedRedis(
 			{
-				ttl: 1000,
+				ttl: 500,
 				redisTtl: 100000,
 				redisTimeout: 100,
 			},
-			new Redis(8888, 'localhost', {
-				commandTimeout: 100,
-				maxRetriesPerRequest: 1,
-			}),
+			redis,
 		);
 		let i = 0;
 
@@ -25,6 +28,8 @@ describe('Non available Redis resilience', () => {
 		const result3 = await remembered.get('my-key', async () => i++);
 		const result4 = await remembered.get('my-key', async () => i++);
 
+		expect(getBuffer).toHaveCallsLike(['my-key']);
+		expect(setex).toHaveCallsLike(['my-key', 100000, expect.any(Buffer)]);
 		expect(result1).toBe(result2);
 		expect(result3).toBe(result4);
 		expect(result1).not.toBe(result3);

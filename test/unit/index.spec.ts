@@ -1,4 +1,3 @@
-import './setup';
 import Redis = require('ioredis');
 import { RememberedRedis } from '../../src';
 import { promisify } from 'util';

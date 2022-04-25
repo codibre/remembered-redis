@@ -1,6 +1,5 @@
 import { LogError } from '../../src';
 import { tryToFactory } from '../../src/try-to-factory';
-import './setup';
 
 describe(tryToFactory.name, () => {
 	let logError: LogError;

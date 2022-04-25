@@ -52,7 +52,8 @@
     "collectCoverageFrom": [
       "./src/**/*.ts"
     ],
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["./test/setup.ts"]
   },
   "directories": {
     "test": "test"
@@ -86,6 +87,7 @@
     "eslint-plugin-unused-imports": "^1.1.5",
     "husky": "^7.0.2",
     "jest": "^27.2.1",
+    "jest-callslike": "^0.2.0",
     "opossum": "^6.3.0",
     "prettier": "^2.4.1",
     "redis-mock": "^0.56.3",

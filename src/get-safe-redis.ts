@@ -5,15 +5,34 @@ import { delay } from './delay';
 
 function raceFactory<T>(
 	timeout: number,
-	callback: (...args: any[]) => Promise<T>,
+	callback: (...args: any[]) => Promise<any>,
 ): (...args: any[]) => Promise<T> {
-	return (args) =>
+	return (...args) =>
 		Promise.race([
 			callback(...args),
 			delay(timeout).then(() =>
 				Promise.reject(new Error('Redis seems to be unavailable')),
 			),
 		]);
+}
+
+type UsedRedisMethods = 'getBuffer' | 'setex' | 'del';
+const usedRedisMethods: UsedRedisMethods[] = ['getBuffer', 'setex', 'del'];
+
+function getSafeMethodFactory(
+	timeout: number,
+	source: Redis,
+	breakerOptions: CircuitBreaker.Options,
+) {
+	return (method: UsedRedisMethods) => {
+		const CircuitBreakerCls = require('opossum') as typeof CircuitBreaker;
+		const getBufferCb = new CircuitBreakerCls(
+			raceFactory(timeout, source[method].bind(source)),
+			breakerOptions,
+		);
+		const safeMethod = getBufferCb.fire.bind(getBufferCb);
+		return [method, safeMethod] as [UsedRedisMethods, Function];
+	};
 }
 
 export function getSafeRedis(
@@ -23,30 +42,17 @@ export function getSafeRedis(
 ): Redis {
 	if (timeout) {
 		try {
-			const CircuitBreakerCls = require('opossum') as typeof CircuitBreaker;
 			const breakerOptions: CircuitBreaker.Options = {
 				timeout,
 				group: v4(),
 			};
-			const getBufferCb = new CircuitBreakerCls(
-				raceFactory(timeout, source.getBuffer.bind(source)),
-				breakerOptions,
+			const map = new Map<UsedRedisMethods, Function>(
+				usedRedisMethods.map(
+					getSafeMethodFactory(timeout, source, breakerOptions),
+				),
 			);
-			const setexCb = new CircuitBreakerCls(
-				raceFactory(timeout, source.setex.bind(source)),
-				breakerOptions,
-			);
-			const delCb = new CircuitBreakerCls(
-				raceFactory(timeout, source.del.bind(source)),
-				breakerOptions,
-			);
-			const map = new Map([
-				['getBuffer', getBufferCb.fire.bind(getBufferCb)],
-				['setex', getBufferCb.fire.bind(setexCb)],
-				['del', getBufferCb.fire.bind(delCb)],
-			]);
 			return new Proxy(source, {
-				get(target, p: keyof Redis) {
+				get(target, p: UsedRedisMethods) {
 					const func = map.get(p);
 					if (func) {
 						return func;
