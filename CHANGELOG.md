@@ -1,3 +1,13 @@
+# [1.0.0](https://github.com/codibre/remembered-redis/compare/v0.11.0...v1.0.0) (2022-04-26)
+
+
+* Avoiding useless throw (#12) ([35d633f](https://github.com/codibre/remembered-redis/commit/35d633f80e3b774a9e4abe55e1d0059070d32c78)), closes [#12](https://github.com/codibre/remembered-redis/issues/12)
+
+
+### BREAKING CHANGES
+
+* Let's bump this lib to v1 already
+
 # [0.11.0](https://github.com/codibre/remembered-redis/compare/v0.10.0...v0.11.0) (2022-04-25)
 
 
