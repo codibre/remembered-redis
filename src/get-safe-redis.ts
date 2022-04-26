@@ -12,13 +12,11 @@ function raceFactory<T>(
 		try {
 			return await Promise.race([
 				callback(...args),
-				delay(timeout).then(() =>
-					{
-						if (!finished) {
-							return Promise.reject(new Error('Redis seems to be unavailable'));
-						}
-					},
-				),
+				delay(timeout).then(() => {
+					if (!finished) {
+						return Promise.reject(new Error('Redis seems to be unavailable'));
+					}
+				}),
 			]);
 		} finally {
 			finished = true;
