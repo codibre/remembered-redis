@@ -1,3 +1,10 @@
+# [0.11.0](https://github.com/codibre/remembered-redis/compare/v0.10.0...v0.11.0) (2022-04-25)
+
+
+### Features
+
+* implementing redis resilience in case of redis unavailability ([#11](https://github.com/codibre/remembered-redis/issues/11)) ([5e86aff](https://github.com/codibre/remembered-redis/commit/5e86aff4142fad92f627aa0c9d745e9afcbe6127))
+
 # [0.10.0](https://github.com/codibre/remembered-redis/compare/v0.9.5...v0.10.0) (2022-03-25)
 
 
