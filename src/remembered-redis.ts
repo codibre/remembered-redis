@@ -97,7 +97,7 @@ export class RememberedRedis extends Remembered {
 		const semaphore = this.getSemaphore(key);
 		await this.tryTo(semaphore.acquire.bind(semaphore));
 		try {
-			return await this.getFromCache(key);
+			return await this.getFromCacheInternal(key);
 		} finally {
 			this.tryTo(semaphore.release.bind(semaphore));
 		}
