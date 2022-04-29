@@ -228,7 +228,9 @@ export class RememberedRedis extends Remembered {
 		return callback();
 	}
 
-	private async getFromCacheInternal<T>(key: string): Promise<T | typeof EMPTY> {
+	private async getFromCacheInternal<T>(
+		key: string,
+	): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
 		const cached: string | Buffer | undefined = await this.try(redisKey, () =>
 			this.redis.getBuffer(redisKey),
