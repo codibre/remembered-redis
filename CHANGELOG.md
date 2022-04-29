@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/codibre/remembered-redis/compare/v1.0.0...v1.0.1) (2022-04-29)
+
+
+### Bug Fixes
+
+* validating semaphore on getFromCache call ([#13](https://github.com/codibre/remembered-redis/issues/13)) ([50aff76](https://github.com/codibre/remembered-redis/commit/50aff768f1e90ddf894e7e97791eb4ae38be9716))
+
 # [1.0.0](https://github.com/codibre/remembered-redis/compare/v0.11.0...v1.0.0) (2022-04-26)
 
 
