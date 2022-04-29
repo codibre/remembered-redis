@@ -93,6 +93,16 @@ export class RememberedRedis extends Remembered {
 		);
 	}
 
+	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
+		const semaphore = this.getSemaphore(key);
+		await this.tryTo(semaphore.acquire.bind(semaphore));
+		try {
+			return await this.getFromCache(key);
+		} finally {
+			this.tryTo(semaphore.release.bind(semaphore));
+		}
+	}
+
 	private async getResult<T>(
 		key: string,
 		callback: () => PromiseLike<T>,
@@ -210,7 +220,7 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
-		const result = await this.getFromCache<T>(key);
+		const result = await this.getFromCacheInternal<T>(key);
 		if (result !== EMPTY) {
 			this.onCache?.(key);
 			return result;
@@ -218,7 +228,7 @@ export class RememberedRedis extends Remembered {
 		return callback();
 	}
 
-	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
+	private async getFromCacheInternal<T>(key: string): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
 		const cached: string | Buffer | undefined = await this.try(redisKey, () =>
 			this.redis.getBuffer(redisKey),
