@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/codibre/remembered-redis/compare/v1.0.1...v1.1.0) (2022-05-02)
+
+
+### Features
+
+* adding maxResultsPerSave ([#14](https://github.com/codibre/remembered-redis/issues/14)) ([12220a3](https://github.com/codibre/remembered-redis/commit/12220a309eb671a5ddef64ecacf54e919d8a2923))
+
 ## [1.0.1](https://github.com/codibre/remembered-redis/compare/v1.0.0...v1.0.1) (2022-04-29)
 
 
