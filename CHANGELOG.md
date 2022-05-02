@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/codibre/remembered-redis/compare/v1.1.0...v1.1.1) (2022-05-02)
+
+
+### Bug Fixes
+
+* fixing wrong if ([#15](https://github.com/codibre/remembered-redis/issues/15)) ([dbefe1b](https://github.com/codibre/remembered-redis/commit/dbefe1b1bde9267e070ce6f9832ce7835fb15aa0))
+
 # [1.1.0](https://github.com/codibre/remembered-redis/compare/v1.0.1...v1.1.0) (2022-05-02)
 
 
