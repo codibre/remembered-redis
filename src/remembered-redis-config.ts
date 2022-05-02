@@ -19,6 +19,7 @@ export interface AlternativePersistence {
 	get(key: string): Promise<Buffer | string | undefined>;
 
 	maxSavingDelay?: number;
+	maxResultsPerSave?: number;
 }
 
 export interface RememberedRedisConfig extends RememberedConfig {

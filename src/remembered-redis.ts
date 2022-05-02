@@ -25,6 +25,12 @@ export const DEFAULT_REFRESH_INTERVAL = 8000;
 export const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
 
+interface SavingObjects {
+	key: string;
+	fullfilled: boolean;
+	entries: Map<string, [number, unknown]>;
+}
+
 function prepareConfig(config: RememberedRedisConfig) {
 	const { redisTtl, ttl } = config;
 
@@ -59,7 +65,7 @@ export class RememberedRedis extends Remembered {
 	private onCache?: (key: string) => void;
 	private onError?: (key: string, err: Error) => any;
 	private alternativePersistence?: AlternativePersistence;
-	private savingObjects: Record<string, unknown> = {};
+	private savingObjects?: SavingObjects;
 	private waitSaving = false;
 	private savingPromise?: Promise<unknown>;
 	private readonly redis: Redis;
@@ -146,24 +152,34 @@ export class RememberedRedis extends Remembered {
 			const resultCopy: T = clone(result);
 			if (this.alternativePersistence) {
 				if (!this.waitSaving) {
-					const key = v4();
-					const savingObjects: Record<string, unknown> = {};
-					savingObjects[redisKey] = resultCopy;
-					if (this.alternativePersistence.maxSavingDelay) {
+					const savingObjects: SavingObjects = {
+						key: v4(),
+						fullfilled: false,
+						entries: new Map(),
+					};
+					savingObjects.entries.set(redisKey, [realTtl, resultCopy]);
+					const { maxResultsPerSave } = this.alternativePersistence;
+					if (
+						this.alternativePersistence.maxSavingDelay &&
+						(!maxResultsPerSave ||
+							savingObjects.entries.size < maxResultsPerSave)
+					) {
 						this.savingObjects = savingObjects;
 						this.waitSaving = true;
 						await delay(this.alternativePersistence.maxSavingDelay);
 						this.waitSaving = false;
-						this.savingObjects = {};
+						this.savingObjects = undefined;
 					}
-					this.savingPromise = Promise.all([
-						this.persist(savingObjects, (value) =>
-							this.alternativePersistence!.save(key, value, realTtl),
-						),
-						...this.saveKeys(savingObjects, realTtl, key),
-					]);
+					this.persistKeys(savingObjects);
 				} else {
-					this.savingObjects[redisKey] = resultCopy;
+					this.savingObjects!.entries.set(redisKey, [realTtl, resultCopy]);
+					const { maxResultsPerSave } = this.alternativePersistence;
+					if (
+						maxResultsPerSave &&
+						this.savingObjects!.entries.size >= maxResultsPerSave
+					) {
+						this.persistKeys(this.savingObjects!);
+					}
 				}
 				await this.savingPromise;
 			} else {
@@ -179,6 +195,28 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
+	private persistKeys(savingObjects: SavingObjects) {
+		if (savingObjects.fullfilled) {
+			savingObjects.fullfilled = true;
+			let minTtl = Number.POSITIVE_INFINITY;
+			for (const [ttl] of savingObjects.entries.values()) {
+				if (minTtl > ttl) {
+					minTtl = ttl;
+				}
+			}
+			const savingPromise = (this.savingPromise = Promise.all([
+				this.persist(savingObjects, (value) =>
+					this.alternativePersistence!.save(savingObjects.key, value, minTtl),
+				),
+				...this.saveKeys(savingObjects),
+			]).then(() => {
+				if (this.savingPromise === savingPromise) {
+					this.savingPromise = undefined;
+				}
+			}));
+		}
+	}
+
 	private async try<T>(key: string, cb: () => Promise<T>) {
 		try {
 			return await cb();
@@ -187,17 +225,11 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private *saveKeys(
-		savingObjects: Record<string, unknown>,
-		realTtl: number,
-		key: string,
-	) {
-		for (const redisKey in savingObjects) {
-			if (savingObjects.hasOwnProperty(redisKey)) {
-				yield this.try(redisKey, () =>
-					this.redis.setex(redisKey, realTtl, key),
-				);
-			}
+	private *saveKeys(savingObjects: SavingObjects) {
+		for (const [redisKey, [ttl]] of savingObjects.entries.entries()) {
+			yield this.try(redisKey, () =>
+				this.redis.setex(redisKey, ttl || 1, savingObjects.key),
+			);
 		}
 	}
 
