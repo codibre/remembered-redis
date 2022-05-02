@@ -196,7 +196,7 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private persistKeys(savingObjects: SavingObjects) {
-		if (savingObjects.fullfilled) {
+		if (!savingObjects.fullfilled) {
 			savingObjects.fullfilled = true;
 			let minTtl = Number.POSITIVE_INFINITY;
 			for (const [ttl] of savingObjects.entries.values()) {
