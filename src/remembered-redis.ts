@@ -199,13 +199,13 @@ export class RememberedRedis extends Remembered {
 		if (!savingObjects.fullfilled) {
 			savingObjects.fullfilled = true;
 			let minTtl = Number.POSITIVE_INFINITY;
-      const entries: Record<string, unknown> = {};
+			const entries: Record<string, unknown> = {};
 
 			for (const [key, [ttl, value]] of savingObjects.entries.entries()) {
 				if (minTtl > ttl) {
 					minTtl = ttl;
 				}
-        entries[key] = value;
+				entries[key] = value;
 			}
 			const savingPromise = (this.savingPromise = Promise.all([
 				this.persist(entries, (value) =>
