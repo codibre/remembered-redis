@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/codibre/remembered-redis/compare/v1.1.1...v1.1.2) (2022-05-03)
+
+
+### Bug Fixes
+
+* fixing object saving after Map changing ([#16](https://github.com/codibre/remembered-redis/issues/16)) ([6c2be3e](https://github.com/codibre/remembered-redis/commit/6c2be3e1e7702c46ac532751f6db9d3036b1ba81))
+
 ## [1.1.1](https://github.com/codibre/remembered-redis/compare/v1.1.0...v1.1.1) (2022-05-02)
 
 
