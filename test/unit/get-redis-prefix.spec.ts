@@ -1,7 +1,7 @@
 import { getRedisPrefix } from '../../src/get-redis-prefix';
 
 describe(getRedisPrefix.name, () => {
-	it('should return prefix followed by : when an string is informed that not ends in it', () => {
+	it('should return prefix followed by : when a string is informed that not ends in it', () => {
 		const result = getRedisPrefix('test');
 
 		expect(result).toBe('test:');
