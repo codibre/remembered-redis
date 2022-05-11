@@ -32,7 +32,7 @@ describe(tryToFactory.name, () => {
 		expect(result).toBeUndefined();
 	});
 
-	it('should return a function that runs the action and not log an error, if the action throws one and logError is undefined', async () => {
+	it('should return a function that runs the action and do not log an error, if the action throws one and logError is undefined', async () => {
 		const callback = tryToFactory(undefined);
 		const action = jest.fn().mockImplementation(async () => {
 			throw new Error('my error');
