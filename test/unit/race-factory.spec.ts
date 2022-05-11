@@ -16,7 +16,7 @@ describe(raceFactory.name, () => {
 		expect(result).toBe('test');
 	});
 
-	it('should return a function that returns a rejected promise if the callback received as parameter do not finish before a specified timeout', async () => {
+	it('should return a function that returns a rejected promise if the callback received as parameter does not finish before the specified timeout', async () => {
 		const callback = jest.fn().mockImplementation(async () => {
 			await delay(10);
 			return 'test';
