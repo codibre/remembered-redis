@@ -7,7 +7,7 @@ describe(getRedisPrefix.name, () => {
 		expect(result).toBe('test:');
 	});
 
-	it('should return prefix as is when an string is informed that ends with :', () => {
+	it('should return prefix as is when a string is informed that ends with :', () => {
 		const result = getRedisPrefix('test:');
 
 		expect(result).toBe('test:');
