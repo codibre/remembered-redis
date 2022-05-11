@@ -3,7 +3,6 @@ import { Redis } from 'ioredis';
 import CircuitBreaker = require('opossum');
 import { raceFactory } from './race-factory';
 
-
 type UsedRedisMethods = 'getBuffer' | 'setex' | 'del';
 const usedRedisMethods: UsedRedisMethods[] = ['getBuffer', 'setex', 'del'];
 
