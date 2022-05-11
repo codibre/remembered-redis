@@ -1,46 +1,27 @@
-import { LogError } from '../../src';
-import { tryToFactory } from '../../src/try-to-factory';
+import { getRedisPrefix } from '../../src/get-redis-prefix';
 
-describe(tryToFactory.name, () => {
-	let logError: LogError;
+describe(getRedisPrefix.name, () => {
+	it('should return prefix followed by : when an string is informed that not ends in it', () => {
+		const result = getRedisPrefix('test');
 
-	beforeEach(() => {
-		logError = jest.fn();
+		expect(result).toBe('test:');
 	});
 
-	it('should return a function that runs the action', async () => {
-		const callback = tryToFactory(logError);
-		const action = jest.fn().mockResolvedValue('test');
+	it('should return prefix as is when an string is informed that ends with :', () => {
+		const result = getRedisPrefix('test:');
 
-		const result = await callback(action);
-
-		expect(action).toHaveCallsLike([]);
-		expect(logError).toHaveCallsLike();
-		expect(result).toBeUndefined();
+		expect(result).toBe('test:');
 	});
 
-	it('should return a function that runs the action and log an error, with the action throws one', async () => {
-		const callback = tryToFactory(logError);
-		const action = jest.fn().mockImplementation(async () => {
-			throw new Error('my error');
-		});
+	it('should return empty string when the informed prefix is undefined', () => {
+		const result = getRedisPrefix(undefined);
 
-		const result = await callback(action);
-
-		expect(action).toHaveCallsLike([]);
-		expect(logError).toHaveCallsLike(['my error']);
-		expect(result).toBeUndefined();
+		expect(result).toBe('');
 	});
 
-	it('should return a function that runs the action and not log an error, with the action throws one and an undefined logError', async () => {
-		const callback = tryToFactory(undefined);
-		const action = jest.fn().mockImplementation(async () => {
-			throw new Error('my error');
-		});
+	it('should return empty string when the informed prefix is an empty string', () => {
+		const result = getRedisPrefix('');
 
-		const result = await callback(action);
-
-		expect(action).toHaveCallsLike([]);
-		expect(result).toBeUndefined();
+		expect(result).toBe('');
 	});
 });
