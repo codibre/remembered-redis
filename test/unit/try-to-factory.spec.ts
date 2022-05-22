@@ -1,27 +1,46 @@
-import { getRedisPrefix } from '../../src/get-redis-prefix';
+import { LogError } from '../../src';
+import { tryToFactory } from '../../src/try-to-factory';
 
-describe(getRedisPrefix.name, () => {
-	it('should return prefix followed by : when an string is informed that not ends in it', () => {
-		const result = getRedisPrefix('test');
+describe(tryToFactory.name, () => {
+	let logError: LogError;
 
-		expect(result).toBe('test:');
+	beforeEach(() => {
+		logError = jest.fn();
 	});
 
-	it('should return prefix as is when an string is informed that ends with :', () => {
-		const result = getRedisPrefix('test:');
+	it('should return a function that runs the action', async () => {
+		const callback = tryToFactory(logError);
+		const action = jest.fn().mockResolvedValue('test');
 
-		expect(result).toBe('test:');
+		const result = await callback(action);
+
+		expect(action).toHaveCallsLike([]);
+		expect(logError).toHaveCallsLike();
+		expect(result).toBeUndefined();
 	});
 
-	it('should and empty string when the informed prefix is undefined', () => {
-		const result = getRedisPrefix(undefined);
+	it('should return a function that runs the action and log an error, if the action throws one', async () => {
+		const callback = tryToFactory(logError);
+		const action = jest.fn().mockImplementation(async () => {
+			throw new Error('my error');
+		});
 
-		expect(result).toBe('');
+		const result = await callback(action);
+
+		expect(action).toHaveCallsLike([]);
+		expect(logError).toHaveCallsLike(['my error']);
+		expect(result).toBeUndefined();
 	});
 
-	it('should and empty string when the informed prefix is an empty string', () => {
-		const result = getRedisPrefix('');
+	it('should return a function that runs the action and do not log an error, if the action throws one and logError is undefined', async () => {
+		const callback = tryToFactory(undefined);
+		const action = jest.fn().mockImplementation(async () => {
+			throw new Error('my error');
+		});
 
-		expect(result).toBe('');
+		const result = await callback(action);
+
+		expect(action).toHaveCallsLike([]);
+		expect(result).toBeUndefined();
 	});
 });
