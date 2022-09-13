@@ -107,6 +107,6 @@
     "ioredis": "*",
     "multi-serializer": "*",
     "redis-semaphore": "*",
-    "remembered": ">=0.7.0"
+    "remembered": ">=0.8.2"
   }
 }

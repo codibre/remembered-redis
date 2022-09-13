@@ -70,28 +70,28 @@ export class RememberedRedis extends Remembered {
 	private savingPromise?: Promise<unknown>;
 	private readonly redis: Redis;
 
-	constructor(private config: RememberedRedisConfig, redis: Redis) {
-		super(prepareConfig(config));
+	constructor(private settings: RememberedRedisConfig, redis: Redis) {
+		super(prepareConfig(settings));
 		this.redisTtl =
-			typeof config.redisTtl === 'number'
-				? () => config.redisTtl as number
-				: config.redisTtl;
-		this.tryTo = tryToFactory(config.logError);
-		this.semaphoreConfig = getSemaphoreConfig(config);
-		this.redisPrefix = getRedisPrefix(config.redisPrefix);
-		this.onCache = config.onCache;
-		this.onError = config.onError;
-		this.alternativePersistence = config.alternativePersistence;
-		this.redis = getSafeRedis(redis, config.onError, config.redisTimeout);
+			typeof settings.redisTtl === 'number'
+				? () => settings.redisTtl as number
+				: settings.redisTtl;
+		this.tryTo = tryToFactory(settings.logError);
+		this.semaphoreConfig = getSemaphoreConfig(settings);
+		this.redisPrefix = getRedisPrefix(settings.redisPrefix);
+		this.onCache = settings.onCache;
+		this.onError = settings.onError;
+		this.alternativePersistence = settings.alternativePersistence;
+		this.redis = getSafeRedis(redis, settings.onError, settings.redisTimeout);
 	}
 
-	get<T>(
+	blockingGet<T>(
 		key: string,
 		callback: () => PromiseLike<T>,
-		noCacheIf?: (t: T) => boolean,
+		noCacheIf?: ((result: T) => boolean) | undefined,
 		ttl?: number,
 	): PromiseLike<T> {
-		return super.get(
+		return super.blockingGet(
 			key,
 			() =>
 				this.tryCache(key, () => this.getResult(key, callback, noCacheIf, ttl)),
@@ -237,7 +237,7 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private get serializer() {
-		return this.config.noCompress ? valueSerializer : gzipValueSerializer;
+		return this.settings.noCompress ? valueSerializer : gzipValueSerializer;
 	}
 
 	private async persist<T>(
