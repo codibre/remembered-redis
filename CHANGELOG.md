@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/codibre/remembered-redis/compare/v1.1.2...v1.1.3) (2022-09-13)
+
+
+### Bug Fixes
+
+* compatibilizing remembered redis with nonBlocking option ([30ed802](https://github.com/codibre/remembered-redis/commit/30ed80295f98a73577dc68efac7535a065fc9e5c))
+
 ## [1.1.2](https://github.com/codibre/remembered-redis/compare/v1.1.1...v1.1.2) (2022-05-03)
 
 
