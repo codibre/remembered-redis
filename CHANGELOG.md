@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/codibre/remembered-redis/compare/v1.1.5...v1.1.6) (2022-09-14)
+
+
+### Bug Fixes
+
+* fixing maximum ttl calculation ([a651adf](https://github.com/codibre/remembered-redis/commit/a651adf3666075e56e336dd05c5d3d9480a9f46a))
+
 ## [1.1.5](https://github.com/codibre/remembered-redis/compare/v1.1.4...v1.1.5) (2022-09-14)
 
 
