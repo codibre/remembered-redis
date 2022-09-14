@@ -71,7 +71,12 @@
   "keywords": [],
   "license": "MIT",
   "peerDependencies": {
-    "opossum": "^6.3.0"
+    "opossum": ">=4.2.4"
+  },
+  "peerDependenciesMeta": {
+    "opossum": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@codibre/confs": "1.1.0",
@@ -91,7 +96,7 @@
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "jest-callslike": "^0.2.0",
-    "opossum": "^6.3.0",
+    "opossum": "^4.2.4",
     "prettier": "^2.4.1",
     "redis-mock": "^0.56.3",
     "ts-jest": "^27.0.5",
