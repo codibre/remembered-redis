@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/codibre/remembered-redis/compare/v1.1.4...v1.1.5) (2022-09-14)
+
+
+### Bug Fixes
+
+* accepting opossum 4.2.4 or over as optional peer dependency ([a331d4a](https://github.com/codibre/remembered-redis/commit/a331d4a7d289779d28900ccb70c59f6d2f7141d3))
+
 ## [1.1.4](https://github.com/codibre/remembered-redis/compare/v1.1.3...v1.1.4) (2022-09-14)
 
 
