@@ -198,18 +198,18 @@ export class RememberedRedis extends Remembered {
 	private persistKeys(savingObjects: SavingObjects) {
 		if (!savingObjects.fullfilled) {
 			savingObjects.fullfilled = true;
-			let minTtl = Number.POSITIVE_INFINITY;
+			let maxTtl = Number.POSITIVE_INFINITY;
 			const entries: Record<string, unknown> = {};
 
 			for (const [key, [ttl, value]] of savingObjects.entries.entries()) {
-				if (minTtl > ttl) {
-					minTtl = ttl;
+				if (maxTtl < ttl) {
+					maxTtl = ttl;
 				}
 				entries[key] = value;
 			}
 			const savingPromise = (this.savingPromise = Promise.all([
 				this.persist(entries, (value) =>
-					this.alternativePersistence!.save(savingObjects.key, value, minTtl),
+					this.alternativePersistence!.save(savingObjects.key, value, maxTtl),
 				),
 				...this.saveKeys(savingObjects),
 			]).then(() => {
