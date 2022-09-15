@@ -26,8 +26,7 @@ export const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
 
 interface SavingObjects {
-	key: string;
-	fullfilled: boolean;
+	fulfilled: boolean;
 	entries: Map<string, [number, unknown]>;
 }
 
@@ -153,8 +152,7 @@ export class RememberedRedis extends Remembered {
 			if (this.alternativePersistence) {
 				if (!this.waitSaving) {
 					const savingObjects: SavingObjects = {
-						key: v4(),
-						fullfilled: false,
+						fulfilled: false,
 						entries: new Map(),
 					};
 					savingObjects.entries.set(redisKey, [realTtl, resultCopy]);
@@ -196,27 +194,38 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private persistKeys(savingObjects: SavingObjects) {
-		if (!savingObjects.fullfilled) {
-			savingObjects.fullfilled = true;
-			let maxTtl = Number.NEGATIVE_INFINITY;
-			const entries: Record<string, unknown> = {};
+		if (!savingObjects.fulfilled) {
+			savingObjects.fulfilled = true;
+			const promises = this.generateSavingPromises(savingObjects);
+			const savingPromise = (this.savingPromise = Promise.all(promises).then(
+				() => {
+					if (this.savingPromise === savingPromise) {
+						this.savingPromise = undefined;
+					}
+				},
+			));
+		}
+	}
 
-			for (const [key, [ttl, value]] of savingObjects.entries.entries()) {
-				if (maxTtl < ttl) {
-					maxTtl = ttl;
-				}
-				entries[key] = value;
+	private *generateSavingPromises(savingObjects: SavingObjects) {
+		const ttlSavingObjects = new Map<
+			number,
+			[string, Map<string, [number, unknown]>]
+		>();
+
+		for (const [key, [ttl, value]] of savingObjects.entries.entries()) {
+			let ttlSaving = ttlSavingObjects.get(ttl);
+			if (!ttlSaving) {
+				ttlSaving = [v4(), new Map()];
+				ttlSavingObjects.set(ttl, ttlSaving);
 			}
-			const savingPromise = (this.savingPromise = Promise.all([
-				this.persist(entries, (value) =>
-					this.alternativePersistence!.save(savingObjects.key, value, maxTtl),
-				),
-				...this.saveKeys(savingObjects),
-			]).then(() => {
-				if (this.savingPromise === savingPromise) {
-					this.savingPromise = undefined;
-				}
-			}));
+			ttlSaving[1].set(key, [ttl, value]);
+		}
+		for (const [ttl, [key, entries]] of ttlSavingObjects) {
+			yield this.persist(entries, (value) =>
+				this.alternativePersistence!.save(key, value, ttl),
+			);
+			yield* this.saveKeys(entries, key);
 		}
 	}
 
@@ -228,11 +237,9 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private *saveKeys(savingObjects: SavingObjects) {
-		for (const [redisKey, [ttl]] of savingObjects.entries.entries()) {
-			yield this.try(redisKey, () =>
-				this.redis.setex(redisKey, ttl || 1, savingObjects.key),
-			);
+	private *saveKeys(entries: Map<string, [number, unknown]>, key: string) {
+		for (const [redisKey, [ttl]] of entries.entries()) {
+			yield this.try(redisKey, () => this.redis.setex(redisKey, ttl || 1, key));
 		}
 	}
 
