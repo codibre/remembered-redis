@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/codibre/remembered-redis/compare/v1.1.6...v1.1.7) (2022-09-15)
+
+
+### Bug Fixes
+
+* sepating saving objects by ttl ([#18](https://github.com/codibre/remembered-redis/issues/18)) ([008f17b](https://github.com/codibre/remembered-redis/commit/008f17bd9ce0ae41dca53ed614405f9d171c6ab0))
+
 ## [1.1.6](https://github.com/codibre/remembered-redis/compare/v1.1.5...v1.1.6) (2022-09-14)
 
 
