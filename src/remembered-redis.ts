@@ -210,22 +210,23 @@ export class RememberedRedis extends Remembered {
 	private *generateSavingPromises(savingObjects: SavingObjects) {
 		const ttlSavingObjects = new Map<
 			number,
-			[string, Map<string, [number, unknown]>]
+			[string, Record<string, unknown>, Map<string, number>]
 		>();
 
 		for (const [key, [ttl, value]] of savingObjects.entries.entries()) {
 			let ttlSaving = ttlSavingObjects.get(ttl);
 			if (!ttlSaving) {
-				ttlSaving = [v4(), new Map()];
+				ttlSaving = [v4(), {}, new Map()];
 				ttlSavingObjects.set(ttl, ttlSaving);
 			}
-			ttlSaving[1].set(key, [ttl, value]);
+			ttlSaving[1][key] = value;
+			ttlSaving[2].set(key, ttl);
 		}
-		for (const [ttl, [key, entries]] of ttlSavingObjects) {
+		for (const [ttl, [key, entries, ttls]] of ttlSavingObjects) {
 			yield this.persist(entries, (value) =>
 				this.alternativePersistence!.save(key, value, ttl),
 			);
-			yield* this.saveKeys(entries, key);
+			yield* this.saveKeys(ttls, key);
 		}
 	}
 
@@ -237,8 +238,8 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private *saveKeys(entries: Map<string, [number, unknown]>, key: string) {
-		for (const [redisKey, [ttl]] of entries.entries()) {
+	private *saveKeys(entries: Map<string, number>, key: string) {
+		for (const [redisKey, ttl] of entries.entries()) {
 			yield this.try(redisKey, () => this.redis.setex(redisKey, ttl || 1, key));
 		}
 	}
@@ -289,7 +290,9 @@ export class RememberedRedis extends Remembered {
 					const deserialized = await this.serializer.deserialize(
 						alternativeCached,
 					);
-					return deserialized[redisKey];
+					return deserialized.hasOwnProperty(redisKey)
+						? deserialized[redisKey]
+						: EMPTY;
 				}
 			}
 			try {
