@@ -1,3 +1,10 @@
+## [1.1.8](https://github.com/codibre/remembered-redis/compare/v1.1.7...v1.1.8) (2022-11-14)
+
+
+### Bug Fixes
+
+* fixing undefined key from alternative persistence ([eafd61c](https://github.com/codibre/remembered-redis/commit/eafd61c758f516787b40a01fead0646b5f4844d0))
+
 ## [1.1.7](https://github.com/codibre/remembered-redis/compare/v1.1.6...v1.1.7) (2022-09-15)
 
 
