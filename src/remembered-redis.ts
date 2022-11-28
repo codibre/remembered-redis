@@ -119,7 +119,9 @@ export class RememberedRedis extends Remembered {
 		await this.tryTo(semaphore.acquire.bind(semaphore));
 		try {
 			const result = await callback();
-			if (result !== undefined && !noCacheIf?.(result)) this.updateCache(key, result, ttl);
+			if (result !== undefined && !noCacheIf?.(result)) {
+				await this.updateCache(key, result, ttl);
+			}
 			return result;
 		} finally {
 			this.tryTo(semaphore.release.bind(semaphore));

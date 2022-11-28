@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 import { gzipValueSerializer } from '../../src/gzip-value-serializer';
 
 const delay = promisify(setTimeout);
+const proto = RememberedRedis.prototype;
 
 describe('index.ts', () => {
 	let redis: Redis.Redis;
@@ -191,5 +192,97 @@ describe('index.ts', () => {
 		);
 		await delay(5);
 		expect(await redis.ttl(target['getRedisKey'](key))).toBeGreaterThan(0);
+	});
+
+	describe(proto.runAndCache.name, () => {
+		let callback: jest.SpyInstance;
+		let noCacheIf: jest.SpyInstance | undefined;
+		let acquire: jest.SpyInstance;
+		let release: jest.SpyInstance;
+		let semaphore: any;
+
+		beforeEach(() => {
+			callback = jest.fn().mockResolvedValue('expected value');
+			acquire = jest.fn().mockReturnValue('acquire result');
+			release = jest.fn().mockReturnValue('release result');
+			jest.spyOn(target, 'updateCache').mockResolvedValue(undefined);
+			semaphore = { acquire: { bind: acquire }, release: { bind: release } };
+			jest.spyOn(target, 'getSemaphore' as any).mockReturnValue(semaphore);
+			jest.spyOn(target, 'tryTo' as any).mockResolvedValue(undefined);
+		});
+
+		it('should run the specified command and save it into cache, when result is defined and noCacheIf is not informed', async () => {
+			const result = await target.runAndCache(
+				'my-key',
+				callback as any,
+				noCacheIf as any,
+				'my ttl' as unknown as number,
+			);
+
+			expect(result).toBe('expected value');
+			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
+			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(callback).toHaveCallsLike([]);
+			expect(target.updateCache).toHaveCallsLike([
+				'my-key',
+				'expected value',
+				'my ttl',
+			]);
+			expect(release).toHaveCallsLike([semaphore]);
+			expect(target['tryTo']).toHaveCallsLike(
+				['acquire result'],
+				['release result'],
+			);
+		});
+
+		it('should run the specified command and save it into cache, when result is defined and noCacheIf returns false', async () => {
+			noCacheIf = jest.fn().mockReturnValue(false);
+
+			const result = await target.runAndCache(
+				'my-key',
+				callback as any,
+				noCacheIf as any,
+				'my ttl' as unknown as number,
+			);
+
+			expect(result).toBe('expected value');
+			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
+			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(callback).toHaveCallsLike([]);
+			expect(noCacheIf).toHaveCallsLike(['expected value']);
+			expect(target.updateCache).toHaveCallsLike([
+				'my-key',
+				'expected value',
+				'my ttl',
+			]);
+			expect(release).toHaveCallsLike([semaphore]);
+			expect(target['tryTo']).toHaveCallsLike(
+				['acquire result'],
+				['release result'],
+			);
+		});
+
+		it('should run the specified command and not save it into cache, when result is defined and noCacheIf returns true', async () => {
+			noCacheIf = jest.fn().mockReturnValue(true);
+
+			const result = await target.runAndCache(
+				'my-key',
+				callback as any,
+				noCacheIf as any,
+				'my ttl' as unknown as number,
+			);
+
+			expect(result).toBe('expected value');
+			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
+			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(callback).toHaveCallsLike([]);
+			expect(noCacheIf).toHaveCallsLike(['expected value']);
+			expect(target.updateCache).toHaveCallsLike();
+			expect(release).toHaveCallsLike([semaphore]);
+			expect(target['tryTo']).toHaveCallsLike(
+				['acquire result'],
+				['release result'],
+			);
+		});
 	});
 });
