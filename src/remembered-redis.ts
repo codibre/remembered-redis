@@ -56,6 +56,7 @@ function prepareConfig(config: RememberedRedisConfig) {
 }
 
 const MAX_ALTERNATIVE_KEY_SIZE = 50;
+const TTL_MAP_POS = 2;
 export class RememberedRedis extends Remembered {
 	private semaphoreConfig: LockOptions;
 	private redisPrefix: string;
@@ -103,6 +104,23 @@ export class RememberedRedis extends Remembered {
 		await this.tryTo(semaphore.acquire.bind(semaphore));
 		try {
 			return await this.getFromCacheInternal(key);
+		} finally {
+			this.tryTo(semaphore.release.bind(semaphore));
+		}
+	}
+
+	async runAndCache<T>(
+		key: string,
+		callback: () => PromiseLike<T>,
+		noCacheIf?: ((result: T) => boolean) | undefined,
+		ttl?: number,
+	): Promise<T> {
+		const semaphore = this.getSemaphore(key);
+		await this.tryTo(semaphore.acquire.bind(semaphore));
+		try {
+			const result = await callback();
+			if (result !== undefined && !noCacheIf?.(result)) this.updateCache(key, result, ttl);
+			return result;
 		} finally {
 			this.tryTo(semaphore.release.bind(semaphore));
 		}
@@ -220,7 +238,7 @@ export class RememberedRedis extends Remembered {
 				ttlSavingObjects.set(ttl, ttlSaving);
 			}
 			ttlSaving[1][key] = value;
-			ttlSaving[2].set(key, ttl);
+			ttlSaving[TTL_MAP_POS].set(key, ttl);
 		}
 		for (const [ttl, [key, entries, ttls]] of ttlSavingObjects) {
 			yield this.persist(entries, (value) =>
