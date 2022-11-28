@@ -82,7 +82,7 @@
     "@codibre/confs": "1.1.0",
     "@types/clone": "^2.1.1",
     "@types/ioredis": "^4.27.4",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^29.2.3",
     "@types/node": "^17.0.30",
     "@types/opossum": "^6.2.0",
     "@types/redis-mock": "^0.17.0",
