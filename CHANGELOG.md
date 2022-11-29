@@ -1,3 +1,9 @@
+# [1.2.0](https://github.com/codibre/remembered-redis/compare/v1.1.8...v1.2.0) (2022-11-29)
+
+
+### Features
+
+* adding runAndCache option ([29b4532](https://github.com/codibre/remembered-redis/commit/29b4532e620e81c0544beb4fc3a95f9848f42448))
 
 ## [1.1.8](https://github.com/codibre/remembered-redis/compare/v1.1.7...v1.1.8) (2022-11-14)
 
