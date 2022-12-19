@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/codibre/remembered-redis/compare/v1.2.0...v1.3.0) (2022-12-19)
+
+
+### Features
+
+* adding noSemaphore to getFromCache ([#20](https://github.com/codibre/remembered-redis/issues/20)) ([13789cd](https://github.com/codibre/remembered-redis/commit/13789cd4c776c17c0501b0ab5aac4844b86c714f))
+
 # [1.2.0](https://github.com/codibre/remembered-redis/compare/v1.1.8...v1.2.0) (2022-11-29)
 
 
