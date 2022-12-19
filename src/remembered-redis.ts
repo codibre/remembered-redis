@@ -99,13 +99,20 @@ export class RememberedRedis extends Remembered {
 		);
 	}
 
-	async getFromCache<T>(key: string): Promise<T | typeof EMPTY> {
+	async getFromCache<T>(
+		key: string,
+		noSemaphore = false,
+	): Promise<T | typeof EMPTY> {
 		const semaphore = this.getSemaphore(key);
-		await this.tryTo(semaphore.acquire.bind(semaphore));
+		if (!noSemaphore) {
+			await this.tryTo(semaphore.acquire.bind(semaphore));
+		}
 		try {
 			return await this.getFromCacheInternal(key);
 		} finally {
-			this.tryTo(semaphore.release.bind(semaphore));
+			if (!noSemaphore) {
+				this.tryTo(semaphore.release.bind(semaphore));
+			}
 		}
 	}
 
