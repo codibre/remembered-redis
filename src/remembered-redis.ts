@@ -88,9 +88,9 @@ export class RememberedRedis extends Remembered {
 	blockingGet<T>(
 		key: string,
 		callback: () => PromiseLike<T>,
-		noCacheIf?: ((result: T) => boolean) | undefined,
+		noCacheIf?: (result: T) => boolean,
 		ttl?: number,
-	): PromiseLike<T> {
+	): Promise<T> {
 		return super.blockingGet(
 			key,
 			() =>
@@ -99,11 +99,34 @@ export class RememberedRedis extends Remembered {
 		);
 	}
 
+	/**
+	 * Returns a value just from teh cache
+	 * @param key the key to the value
+	 * @param noSemaphore if semaphore must be ignored. Default false
+	 * @returns the result from cache, or the symbol EMPTY, indicating no cache
+	 */
 	async getFromCache<T>(
 		key: string,
-		noSemaphore = false,
+		noSemaphore?: boolean,
+	): Promise<T | typeof EMPTY>;
+	/**
+	 * Returns a value just from teh cache
+	 * @param key the key to the value
+	 * @param noSemaphore The maximum time, in milliseconds, to wait on the semaphore
+	 * @returns the result from cache, or the symbol EMPTY, indicating no cache
+	 */
+	async getFromCache<T>(
+		key: string,
+		semaphoreTimeout: number,
+	): Promise<T | typeof EMPTY>;
+	async getFromCache<T>(
+		key: string,
+		noSemaphore: boolean | number = false,
 	): Promise<T | typeof EMPTY> {
-		const semaphore = this.getSemaphore(key);
+		const semaphore = this.getSemaphore(
+			key,
+			noSemaphore && typeof noSemaphore === 'number' ? noSemaphore : undefined,
+		);
 		if (!noSemaphore) {
 			await this.tryTo(semaphore.acquire.bind(semaphore));
 		}
@@ -155,7 +178,7 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private getSemaphore(key: string) {
+	private getSemaphore(key: string, acquireTimeout?: number) {
 		return new Semaphore(
 			this.redis,
 			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
@@ -163,6 +186,7 @@ export class RememberedRedis extends Remembered {
 			{
 				...this.semaphoreConfig,
 				onLockLost: () => undefined,
+				acquireTimeout,
 			},
 		);
 	}
@@ -302,7 +326,7 @@ export class RememberedRedis extends Remembered {
 		key: string,
 	): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
-		const cached: string | Buffer | undefined = await this.try(redisKey, () =>
+		const cached = await this.try(redisKey, () =>
 			this.redis.getBuffer(redisKey),
 		);
 		if (cached) {

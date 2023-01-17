@@ -305,7 +305,7 @@ describe('index.ts', () => {
 		it('should acquire semaphore when noSemaphore is not informed', async () => {
 			const result = await target.getFromCache('my key');
 
-			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
+			expect(target['getSemaphore']).toHaveCallsLike(['my key', undefined]);
 			expect(acquire).toHaveCallsLike([semaphore]);
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key']);
 			expect(release).toHaveCallsLike([semaphore]);
@@ -319,7 +319,7 @@ describe('index.ts', () => {
 		it('should acquire semaphore when noSemaphore is false', async () => {
 			const result = await target.getFromCache('my key', false);
 
-			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
+			expect(target['getSemaphore']).toHaveCallsLike(['my key', undefined]);
 			expect(acquire).toHaveCallsLike([semaphore]);
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key']);
 			expect(release).toHaveCallsLike([semaphore]);
@@ -333,11 +333,25 @@ describe('index.ts', () => {
 		it('should not acquire semaphore when noSemaphore is true', async () => {
 			const result = await target.getFromCache('my key', true);
 
-			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
+			expect(target['getSemaphore']).toHaveCallsLike(['my key', undefined]);
 			expect(acquire).toHaveCallsLike();
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key']);
 			expect(release).toHaveCallsLike();
 			expect(target['tryTo']).toHaveCallsLike();
+			expect(result).toBe('expected result');
+		});
+
+		it('should acquire semaphore with a timeout when a timeout is specified', async () => {
+			const result = await target.getFromCache('my key', 300);
+
+			expect(target['getSemaphore']).toHaveCallsLike(['my key', 300]);
+			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key']);
+			expect(release).toHaveCallsLike([semaphore]);
+			expect(target['tryTo']).toHaveCallsLike(
+				['acquire result'],
+				['release result'],
+			);
 			expect(result).toBe('expected result');
 		});
 	});
