@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/codibre/remembered-redis/compare/v1.4.0...v1.5.0) (2023-06-16)
+
+
+### Features
+
+* implementing redlock support ([#21](https://github.com/codibre/remembered-redis/issues/21)) ([b8a3d2d](https://github.com/codibre/remembered-redis/commit/b8a3d2d2b7b590a6f1ca0f9955d55f2567398a59))
+
 # [1.4.0](https://github.com/codibre/remembered-redis/compare/v1.3.0...v1.4.0) (2023-06-16)
 
 
