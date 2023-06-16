@@ -15,3 +15,8 @@ export function getSemaphoreConfig(config: RememberedRedisConfig): LockOptions {
 		refreshInterval: config.refreshInterval || DEFAULT_REFRESH_INTERVAL,
 	};
 }
+
+export interface RememberedSemaphore {
+	acquire(): Promise<void>;
+	release(): Promise<void>;
+}
