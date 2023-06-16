@@ -6,6 +6,7 @@ import {
 	RememberedRedisConfig,
 	TryTo,
 	AlternativePersistence,
+	SemaphoreLib,
 } from './remembered-redis-config';
 import {
 	getSemaphoreConfig,
@@ -66,7 +67,7 @@ const DEFAULT_RETRY_COUNT = 1000;
 const DEFAULT_RETRY_DELAY = 100;
 
 export class RememberedRedis extends Remembered {
-	private static semaphoreLib: 'redlock' | 'redis-semaphore' | undefined;
+	private static semaphoreLib: SemaphoreLib | undefined;
 	private static redLocksInstances = new Map<Redis, unknown>();
 	private semaphoreConfig: LockOptions;
 	private redisPrefix: string;
@@ -169,23 +170,13 @@ export class RememberedRedis extends Remembered {
 		if (!RememberedRedis.semaphoreLib) {
 			try {
 				RedLockClass = require('redlock').default;
-				RememberedRedis.semaphoreLib = 'redlock';
+				RememberedRedis.semaphoreLib = SemaphoreLib.RedLock;
 			} catch {
-				RememberedRedis.semaphoreLib = 'redis-semaphore';
+				RememberedRedis.semaphoreLib = SemaphoreLib.RedisSemaphore;
 			}
 		}
 		const { redis, semaphoreConfig } = this;
-		if (RememberedRedis.semaphoreLib === 'redis-semaphore' || !RedLockClass) {
-			return new Semaphore(
-				redis,
-				`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
-				1,
-				{
-					...this.semaphoreConfig,
-					onLockLost: (err) => this.settings.onLockLost?.(key, err),
-				},
-			);
-		} else {
+		if (RedLockClass) {
 			let instance = RememberedRedis.redLocksInstances.get(redis) as
 				| RedLock
 				| undefined;
@@ -215,6 +206,15 @@ export class RememberedRedis extends Remembered {
 				},
 			};
 		}
+		return new Semaphore(
+			redis,
+			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
+			1,
+			{
+				...this.semaphoreConfig,
+				onLockLost: (err) => this.settings.onLockLost?.(key, err),
+			},
+		);
 	}
 
 	async updateCache<T>(

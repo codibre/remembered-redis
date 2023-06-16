@@ -40,3 +40,8 @@ export interface RememberedRedisConfig extends RememberedConfig {
 	 */
 	alternativePersistence?: AlternativePersistence;
 }
+
+export enum SemaphoreLib {
+	RedLock = 'redlock',
+	RedisSemaphore = 'redis-semaphore',
+}
