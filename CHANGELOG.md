@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/codibre/remembered-redis/compare/v1.3.0...v1.4.0) (2023-06-16)
+
+
+### Features
+
+* adding onLockError ([90278d4](https://github.com/codibre/remembered-redis/commit/90278d47e95dc58e44982fb50edd75c092497bfd))
+
 # [1.3.0](https://github.com/codibre/remembered-redis/compare/v1.2.0...v1.3.0) (2022-12-19)
 
 
