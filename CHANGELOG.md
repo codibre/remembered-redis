@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/codibre/remembered-redis/compare/v1.5.0...v1.6.0) (2023-06-16)
+
+
+### Features
+
+* using RedlockSemaphore from redis-semaphore ([#22](https://github.com/codibre/remembered-redis/issues/22)) ([3623ca0](https://github.com/codibre/remembered-redis/commit/3623ca01cbb23949da96bc929a48a8948d6bff73))
+
 # [1.5.0](https://github.com/codibre/remembered-redis/compare/v1.4.0...v1.5.0) (2023-06-16)
 
 
