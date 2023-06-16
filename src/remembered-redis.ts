@@ -6,8 +6,12 @@ import {
 	RememberedRedisConfig,
 	TryTo,
 	AlternativePersistence,
+	SemaphoreLib,
 } from './remembered-redis-config';
-import { getSemaphoreConfig } from './get-semaphore-config';
+import {
+	getSemaphoreConfig,
+	RememberedSemaphore,
+} from './get-semaphore-config';
 import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
 import { gzipValueSerializer } from './gzip-value-serializer';
@@ -15,6 +19,7 @@ import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
 import * as clone from 'clone';
 import { getSafeRedis } from './get-safe-redis';
+import type RedLock from 'redlock';
 
 const delay = promisify(setTimeout);
 
@@ -24,6 +29,7 @@ export const DEFAULT_RETRY_INTERVAL = 100;
 export const DEFAULT_REFRESH_INTERVAL = 8000;
 export const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
+let RedLockClass: typeof RedLock | undefined;
 
 interface SavingObjects {
 	fulfilled: boolean;
@@ -57,7 +63,12 @@ function prepareConfig(config: RememberedRedisConfig) {
 
 const MAX_ALTERNATIVE_KEY_SIZE = 50;
 const TTL_MAP_POS = 2;
+const DEFAULT_RETRY_COUNT = 1000;
+const DEFAULT_RETRY_DELAY = 100;
+
 export class RememberedRedis extends Remembered {
+	private static semaphoreLib: SemaphoreLib | undefined;
+	private static redLocksInstances = new Map<Redis, unknown>();
 	private semaphoreConfig: LockOptions;
 	private redisPrefix: string;
 	private redisTtl?: <T>(r: T) => number;
@@ -85,7 +96,12 @@ export class RememberedRedis extends Remembered {
 		this.redis = getSafeRedis(redis, settings.onError, settings.redisTimeout);
 	}
 
-	async blockingGet<T>(key: string, callback: () => PromiseLike<T>, noCacheIf?: ((result: T) => boolean) | undefined, ttl?: number | undefined): Promise<T> {
+	async blockingGet<T>(
+		key: string,
+		callback: () => PromiseLike<T>,
+		noCacheIf?: ((result: T) => boolean) | undefined,
+		ttl?: number | undefined,
+	): Promise<T> {
 		return super.blockingGet(
 			key,
 			() =>
@@ -150,9 +166,48 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private getSemaphore(key: string) {
+	private getSemaphore(key: string): RememberedSemaphore {
+		if (!RememberedRedis.semaphoreLib) {
+			try {
+				RedLockClass = require('redlock').default;
+				RememberedRedis.semaphoreLib = SemaphoreLib.RedLock;
+			} catch {
+				RememberedRedis.semaphoreLib = SemaphoreLib.RedisSemaphore;
+			}
+		}
+		const { redis, semaphoreConfig } = this;
+		if (RedLockClass) {
+			let instance = RememberedRedis.redLocksInstances.get(redis) as
+				| RedLock
+				| undefined;
+			if (!instance) {
+				instance = new RedLockClass([redis], {
+					retryCount: DEFAULT_RETRY_COUNT,
+					retryDelay: DEFAULT_RETRY_DELAY,
+					retryJitter: Math.ceil(
+						semaphoreConfig.refreshInterval! / DEFAULT_RETRY_COUNT,
+					),
+					driftFactor: 0.01,
+				});
+				RememberedRedis.redLocksInstances.set(redis, instance);
+			}
+			let lock: ReturnType<typeof instance.acquire> extends Promise<infer R>
+				? R
+				: never;
+			return {
+				async acquire() {
+					lock = await instance!.acquire(
+						[key],
+						semaphoreConfig.acquireTimeout ?? DEFAULT_ACQUIRE_TIMEOUT,
+					);
+				},
+				async release() {
+					await lock?.release();
+				},
+			};
+		}
 		return new Semaphore(
-			this.redis,
+			redis,
 			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
 			1,
 			{

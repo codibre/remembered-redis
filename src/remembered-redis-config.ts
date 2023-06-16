@@ -34,9 +34,14 @@ export interface RememberedRedisConfig extends RememberedConfig {
 	logError?: LogError;
 	onCache?: (key: string) => void;
 	onError?: (key: string, err: Error) => any;
-  onLockLost?: (key: string, err: Error & { name: string }) => any;
+	onLockLost?: (key: string, err: Error & { name: string }) => any;
 	/**
 	 * When informed, redis is used only for ttl control, but the real data is persisted using these methods
 	 */
 	alternativePersistence?: AlternativePersistence;
+}
+
+export enum SemaphoreLib {
+	RedLock = 'redlock',
+	RedisSemaphore = 'redis-semaphore',
 }
