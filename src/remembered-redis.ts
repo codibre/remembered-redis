@@ -85,12 +85,7 @@ export class RememberedRedis extends Remembered {
 		this.redis = getSafeRedis(redis, settings.onError, settings.redisTimeout);
 	}
 
-	blockingGet<T>(
-		key: string,
-		callback: () => PromiseLike<T>,
-		noCacheIf?: ((result: T) => boolean) | undefined,
-		ttl?: number,
-	): PromiseLike<T> {
+	async blockingGet<T>(key: string, callback: () => PromiseLike<T>, noCacheIf?: ((result: T) => boolean) | undefined, ttl?: number | undefined): Promise<T> {
 		return super.blockingGet(
 			key,
 			() =>
@@ -162,7 +157,7 @@ export class RememberedRedis extends Remembered {
 			1,
 			{
 				...this.semaphoreConfig,
-				onLockLost: () => undefined,
+				onLockLost: (err) => this.settings.onLockLost?.(key, err),
 			},
 		);
 	}

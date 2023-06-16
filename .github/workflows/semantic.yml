@@ -16,19 +16,20 @@ jobs:
       - uses: actions/checkout@master
         with:
           token: ${{ secrets.GH_TOKEN }}
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: "10.x"
+          node-version: "14.x"
       - run: printf "//`node -p \"require('url').parse('https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\n" >> ~/.npmrc
       - run: npm ci
       - run: npm run build --if-present
       - name: Redis Server in GitHub Actions
         uses: supercharge/redis-github-action@1.1.0
       - run: npm test
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16.x"
-      - run: npm i -g @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/git @semantic-release/github @semantic-release/npm @semantic-release/release-notes-generator semantic-release
+          node-version: "lts/*"
+      - run: previousVersion=$(sed 's/.*"version"&#58; "\(.*\)".*/\1/;t;d' ./package.json)
+      - run: npm i -g @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/git @semantic-release/github @semantic-release/exec @semantic-release/npm @semantic-release/release-notes-generator semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
@@ -36,3 +37,5 @@ jobs:
           CI: true
       - run: npx semantic-release --ci
       - run: git push
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
