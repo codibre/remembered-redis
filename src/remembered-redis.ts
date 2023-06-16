@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { Remembered } from 'remembered';
 import { Redis } from 'ioredis';
-import { LockOptions, Semaphore } from 'redis-semaphore';
+import { LockOptions, RedlockSemaphore } from 'redis-semaphore';
 import {
 	RememberedRedisConfig,
 	TryTo,
@@ -206,8 +206,8 @@ export class RememberedRedis extends Remembered {
 				},
 			};
 		}
-		return new Semaphore(
-			redis,
+		return new RedlockSemaphore(
+			[redis],
 			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
 			1,
 			{
