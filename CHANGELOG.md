@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/codibre/remembered-redis/compare/v1.6.0...v1.7.0) (2023-06-17)
+
+
+### Features
+
+* using Mutex from redis-semaphore ([#23](https://github.com/codibre/remembered-redis/issues/23)) ([ec674f5](https://github.com/codibre/remembered-redis/commit/ec674f586f644d387f8e709ff6bc169a492f9438))
+
 # [1.6.0](https://github.com/codibre/remembered-redis/compare/v1.5.0...v1.6.0) (2023-06-16)
 
 
