@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { Remembered } from 'remembered';
 import { Redis } from 'ioredis';
-import { LockOptions, RedlockSemaphore } from 'redis-semaphore';
+import { LockOptions, Mutex } from 'redis-semaphore';
 import {
 	RememberedRedisConfig,
 	TryTo,
@@ -206,10 +206,9 @@ export class RememberedRedis extends Remembered {
 				},
 			};
 		}
-		return new RedlockSemaphore(
+		return new Mutex(
 			[redis],
 			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
-			1,
 			{
 				...this.semaphoreConfig,
 				onLockLost: (err) => this.settings.onLockLost?.(key, err),
