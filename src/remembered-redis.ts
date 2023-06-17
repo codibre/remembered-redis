@@ -17,7 +17,7 @@ import { tryToFactory } from './try-to-factory';
 import { gzipValueSerializer } from './gzip-value-serializer';
 import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
-import * as clone from 'clone';
+import clone from 'clone';
 import { getSafeRedis } from './get-safe-redis';
 import type RedLock from 'redlock';
 
@@ -351,7 +351,7 @@ export class RememberedRedis extends Remembered {
 		key: string,
 	): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
-		const cached: string | Buffer | undefined = await this.try(redisKey, () =>
+		const cached = await this.try(redisKey, () =>
 			this.redis.getBuffer(redisKey),
 		);
 		if (cached) {
