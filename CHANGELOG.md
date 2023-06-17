@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/codibre/remembered-redis/compare/v1.8.0...v1.8.1) (2023-06-17)
+
+
+### Bug Fixes
+
+* removing double lock ([#28](https://github.com/codibre/remembered-redis/issues/28)) ([6a8c737](https://github.com/codibre/remembered-redis/commit/6a8c737e0d55e86ee9523e73007c9e288ca66464))
+
 # [1.8.0](https://github.com/codibre/remembered-redis/compare/v1.7.2...v1.8.0) (2023-06-17)
 
 
