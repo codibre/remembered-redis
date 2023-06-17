@@ -1,4 +1,4 @@
-import Redis = require('ioredis');
+import Redis from 'ioredis';
 import { RememberedRedis } from '../../src';
 import { promisify } from 'util';
 import { v4 } from 'uuid';
@@ -8,7 +8,7 @@ const delay = promisify(setTimeout);
 const proto = RememberedRedis.prototype;
 
 describe('index.ts', () => {
-	let redis: Redis.Redis;
+	let redis: Redis;
 	let target: RememberedRedis;
 	let key: string;
 
