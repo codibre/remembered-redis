@@ -17,7 +17,6 @@ describe('e2e: Non available Redis resilience', () => {
 				ttl: 900,
 				redisTtl: 100000,
 				redisTimeout: 100,
-				doubleLock: true,
 			},
 			redis,
 		);

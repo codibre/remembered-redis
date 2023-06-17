@@ -161,36 +161,10 @@ export class RememberedRedis extends Remembered {
 
 	private getSemaphore(key: string): RememberedSemaphore {
 		const { redis } = this;
-		const config: LockOptions | undefined = {
+		return new Mutex(redis, `${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`, {
 			...this.semaphoreConfig,
 			onLockLost: (err) => this.settings.onLockLost?.(key, err),
-		};
-		const mutex = new Mutex(
-			redis,
-			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
-			config,
-		);
-
-		if (this.settings.doubleLock === false) {
-			return mutex;
-		}
-
-		const doubleMutex = new Mutex(
-			redis,
-			`${this.redisPrefix}REMEMBERED-SEMAPHORE-DOUBLE:${key}`,
-			config,
-		);
-
-		return {
-			async acquire() {
-				await doubleMutex.acquire();
-				await mutex.acquire();
-				await doubleMutex.release();
-			},
-			release() {
-				return mutex.release();
-			},
-		};
+		});
 	}
 
 	async updateCache<T>(
