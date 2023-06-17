@@ -184,18 +184,15 @@ export class RememberedRedis extends Remembered {
 					};
 					savingObjects.entries.set(redisKey, [realTtl, resultCopy]);
 					const { maxResultsPerSave } = this.alternativePersistence;
-					if (
-						this.alternativePersistence.maxSavingDelay &&
-						(!maxResultsPerSave ||
-							savingObjects.entries.size < maxResultsPerSave)
-					) {
-						this.savingObjects = savingObjects;
-						this.waitSaving = true;
-						await delay(this.alternativePersistence.maxSavingDelay);
-						this.waitSaving = false;
-						this.savingObjects = undefined;
-					}
-					this.persistKeys(savingObjects);
+					const savingPromise = (this.savingPromise =
+						this.prepareAccumulatingPromise(
+							maxResultsPerSave,
+							savingObjects,
+						).then(() => {
+							if (this.savingPromise === savingPromise) {
+								this.savingPromise = undefined;
+							}
+						}));
 				} else {
 					this.savingObjects!.entries.set(redisKey, [realTtl, resultCopy]);
 					const { maxResultsPerSave } = this.alternativePersistence;
@@ -203,7 +200,10 @@ export class RememberedRedis extends Remembered {
 						maxResultsPerSave &&
 						this.savingObjects!.entries.size >= maxResultsPerSave
 					) {
-						this.persistKeys(this.savingObjects!);
+						const savingObjects = this.savingObjects!;
+						this.waitSaving = false;
+						this.savingObjects = undefined;
+						await this.persistKeys(savingObjects);
 					}
 				}
 				await this.savingPromise;
@@ -220,17 +220,28 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private persistKeys(savingObjects: SavingObjects) {
+	private async prepareAccumulatingPromise(
+		maxResultsPerSave: number | undefined,
+		savingObjects: SavingObjects,
+	) {
+		if (
+			this.alternativePersistence!.maxSavingDelay &&
+			(!maxResultsPerSave || savingObjects.entries.size < maxResultsPerSave)
+		) {
+			this.savingObjects = savingObjects;
+			this.waitSaving = true;
+			await delay(this.alternativePersistence!.maxSavingDelay);
+			this.waitSaving = false;
+			this.savingObjects = undefined;
+		}
+		this.persistKeys(savingObjects);
+	}
+
+	private async persistKeys(savingObjects: SavingObjects) {
 		if (!savingObjects.fulfilled) {
 			savingObjects.fulfilled = true;
 			const promises = this.generateSavingPromises(savingObjects);
-			const savingPromise = (this.savingPromise = Promise.all(promises).then(
-				() => {
-					if (this.savingPromise === savingPromise) {
-						this.savingPromise = undefined;
-					}
-				},
-			));
+			await Promise.all(promises);
 		}
 	}
 
