@@ -16,7 +16,7 @@ describe(tryToFactory.name, () => {
 
 		expect(action).toHaveCallsLike([]);
 		expect(logError).toHaveCallsLike();
-		expect(result).toBeUndefined();
+		expect(result).toBe('test');
 	});
 
 	it('should return a function that runs the action and log an error, if the action throws one', async () => {

@@ -206,9 +206,10 @@ describe('index.ts', () => {
 			acquire = jest.fn().mockReturnValue('acquire result');
 			release = jest.fn().mockReturnValue('release result');
 			jest.spyOn(target, 'updateCache').mockResolvedValue(undefined);
-			semaphore = { acquire: { bind: acquire }, release: { bind: release } };
+			semaphore = { acquire, release };
 			jest.spyOn(target, 'getSemaphore' as any).mockReturnValue(semaphore);
 			jest.spyOn(target, 'tryTo' as any).mockResolvedValue(undefined);
+			jest.spyOn(target, 'dontWait' as any).mockReturnValue(undefined);
 		});
 
 		it('should run the specified command and save it into cache, when result is defined and noCacheIf is not informed', async () => {
@@ -221,18 +222,14 @@ describe('index.ts', () => {
 
 			expect(result).toBe('expected value');
 			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
-			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(acquire).toHaveCallsLike([]);
 			expect(callback).toHaveCallsLike([]);
 			expect(target.updateCache).toHaveCallsLike([
 				'my-key',
 				'expected value',
 				'my ttl',
 			]);
-			expect(release).toHaveCallsLike([semaphore]);
-			expect(target['tryTo']).toHaveCallsLike(
-				['acquire result'],
-				['release result'],
-			);
+			expect(release).toHaveCallsLike([]);
 		});
 
 		it('should run the specified command and save it into cache, when result is defined and noCacheIf returns false', async () => {
@@ -247,7 +244,7 @@ describe('index.ts', () => {
 
 			expect(result).toBe('expected value');
 			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
-			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(acquire).toHaveCallsLike([]);
 			expect(callback).toHaveCallsLike([]);
 			expect(noCacheIf).toHaveCallsLike(['expected value']);
 			expect(target.updateCache).toHaveCallsLike([
@@ -255,11 +252,7 @@ describe('index.ts', () => {
 				'expected value',
 				'my ttl',
 			]);
-			expect(release).toHaveCallsLike([semaphore]);
-			expect(target['tryTo']).toHaveCallsLike(
-				['acquire result'],
-				['release result'],
-			);
+			expect(release).toHaveCallsLike([]);
 		});
 
 		it('should run the specified command and not save it into cache, when result is defined and noCacheIf returns true', async () => {
@@ -274,15 +267,11 @@ describe('index.ts', () => {
 
 			expect(result).toBe('expected value');
 			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
-			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(acquire).toHaveCallsLike([]);
 			expect(callback).toHaveCallsLike([]);
 			expect(noCacheIf).toHaveCallsLike(['expected value']);
 			expect(target.updateCache).toHaveCallsLike();
-			expect(release).toHaveCallsLike([semaphore]);
-			expect(target['tryTo']).toHaveCallsLike(
-				['acquire result'],
-				['release result'],
-			);
+			expect(release).toHaveCallsLike([]);
 		});
 	});
 
@@ -294,25 +283,20 @@ describe('index.ts', () => {
 		beforeEach(() => {
 			acquire = jest.fn().mockReturnValue('acquire result');
 			release = jest.fn().mockReturnValue('release result');
-			semaphore = { acquire: { bind: acquire }, release: { bind: release } };
+			semaphore = { acquire, release };
 			jest.spyOn(target, 'getSemaphore' as any).mockReturnValue(semaphore);
 			jest
 				.spyOn(target, 'getFromCacheInternal' as any)
 				.mockResolvedValue('expected result');
-			jest.spyOn(target, 'tryTo' as any).mockResolvedValue(undefined);
 		});
 
 		it('should acquire semaphore when noSemaphore is not informed', async () => {
 			const result = await target.getFromCache('my key');
 
 			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
-			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(acquire).toHaveCallsLike([]);
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
-			expect(release).toHaveCallsLike([semaphore]);
-			expect(target['tryTo']).toHaveCallsLike(
-				['acquire result'],
-				['release result'],
-			);
+			expect(release).toHaveCallsLike([]);
 			expect(result).toBe('expected result');
 		});
 
@@ -320,13 +304,9 @@ describe('index.ts', () => {
 			const result = await target.getFromCache('my key', false);
 
 			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
-			expect(acquire).toHaveCallsLike([semaphore]);
+			expect(acquire).toHaveCallsLike([]);
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
-			expect(release).toHaveCallsLike([semaphore]);
-			expect(target['tryTo']).toHaveCallsLike(
-				['acquire result'],
-				['release result'],
-			);
+			expect(release).toHaveCallsLike([]);
 			expect(result).toBe('expected result');
 		});
 
@@ -337,7 +317,6 @@ describe('index.ts', () => {
 			expect(acquire).toHaveCallsLike();
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
 			expect(release).toHaveCallsLike();
-			expect(target['tryTo']).toHaveCallsLike();
 			expect(result).toBe('expected result');
 		});
 	});

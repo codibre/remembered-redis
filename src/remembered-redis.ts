@@ -18,6 +18,7 @@ import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
 import clone from 'clone';
 import { getSafeRedis } from './get-safe-redis';
+import { dontWaitFactory } from './dont-wait';
 
 const delay = promisify(setTimeout);
 
@@ -66,6 +67,7 @@ export class RememberedRedis extends Remembered {
 	private redisPrefix: string;
 	private redisTtl?: <T>(r: T) => number;
 	private tryTo: TryTo;
+	private dontWait: ReturnType<typeof dontWaitFactory>;
 	private onCache?: (key: string) => void;
 	private onError?: (key: string, err: Error) => any;
 	private alternativePersistence?: AlternativePersistence;
@@ -81,6 +83,7 @@ export class RememberedRedis extends Remembered {
 				? () => settings.redisTtl as number
 				: settings.redisTtl;
 		this.tryTo = tryToFactory(settings.logError);
+		this.dontWait = dontWaitFactory(settings.logError, this.tryTo);
 		this.semaphoreConfig = getSemaphoreConfig(settings);
 		this.redisPrefix = getRedisPrefix(settings.redisPrefix);
 		this.onCache = settings.onCache;
@@ -109,13 +112,13 @@ export class RememberedRedis extends Remembered {
 	): Promise<T | typeof EMPTY> {
 		const semaphore = this.getSemaphore(key);
 		if (!noSemaphore) {
-			await this.tryTo(semaphore.acquire.bind(semaphore));
+			await semaphore.acquire();
 		}
 		try {
 			return await this.getFromCacheInternal(key, false);
 		} finally {
 			if (!noSemaphore) {
-				this.tryTo(semaphore.release.bind(semaphore));
+				semaphore.release();
 			}
 		}
 	}
@@ -127,7 +130,7 @@ export class RememberedRedis extends Remembered {
 		ttl?: number,
 	): Promise<T> {
 		const semaphore = this.getSemaphore(key);
-		await this.tryTo(semaphore.acquire.bind(semaphore));
+		await semaphore.acquire();
 		try {
 			const result = await callback();
 			if (result !== undefined && !noCacheIf?.(result)) {
@@ -135,7 +138,7 @@ export class RememberedRedis extends Remembered {
 			}
 			return result;
 		} finally {
-			this.tryTo(semaphore.release.bind(semaphore));
+			semaphore.release();
 		}
 	}
 
@@ -146,7 +149,7 @@ export class RememberedRedis extends Remembered {
 		ttl?: number,
 	) {
 		const semaphore = this.getSemaphore(key);
-		await this.tryTo(semaphore.acquire.bind(semaphore));
+		await semaphore.acquire();
 		let saveCache = resolved;
 		try {
 			const result = await this.tryCache(key, callback);
@@ -155,16 +158,27 @@ export class RememberedRedis extends Remembered {
 			}
 			return result;
 		} finally {
-			saveCache.then(() => this.tryTo(semaphore.release.bind(semaphore)));
+			this.dontWait(() => saveCache.then(semaphore.release.bind(semaphore)));
 		}
 	}
 
 	private getSemaphore(key: string): RememberedSemaphore {
 		const { redis } = this;
-		return new Mutex(redis, `${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`, {
-			...this.semaphoreConfig,
-			onLockLost: (err) => this.settings.onLockLost?.(key, err),
-		});
+		const mutex = new Mutex(
+			redis,
+			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
+			{
+				...this.semaphoreConfig,
+				onLockLost: (err) => this.settings.onLockLost?.(key, err),
+			},
+		);
+		const acquire = mutex.acquire.bind(mutex);
+		const release = mutex.release.bind(mutex);
+
+		return {
+			acquire: () => this.tryTo(acquire),
+			release: () => this.dontWait(release),
+		};
 	}
 
 	async updateCache<T>(
@@ -177,7 +191,15 @@ export class RememberedRedis extends Remembered {
 			const realTtl = ttl || 1;
 			const resultCopy: T = clone(result);
 			if (this.alternativePersistence) {
-				if (!this.waitSaving) {
+				if (!this.alternativePersistence.maxSavingDelay) {
+					await this.persistKeys(
+						{
+							fulfilled: false,
+							entries: new Map([[redisKey, [realTtl, resultCopy]]]),
+						},
+						redisKey.replace(/:/g, '/'),
+					);
+				} else if (!this.waitSaving) {
 					const savingObjects: SavingObjects = {
 						fulfilled: false,
 						entries: new Map(),
@@ -200,10 +222,8 @@ export class RememberedRedis extends Remembered {
 						maxResultsPerSave &&
 						this.savingObjects!.entries.size >= maxResultsPerSave
 					) {
-						const savingObjects = this.savingObjects!;
 						this.waitSaving = false;
 						this.savingObjects = undefined;
-						await this.persistKeys(savingObjects);
 					}
 				}
 				await this.savingPromise;
@@ -224,28 +244,31 @@ export class RememberedRedis extends Remembered {
 		maxResultsPerSave: number | undefined,
 		savingObjects: SavingObjects,
 	) {
-		if (
-			this.alternativePersistence!.maxSavingDelay &&
-			(!maxResultsPerSave || savingObjects.entries.size < maxResultsPerSave)
-		) {
+		if (!maxResultsPerSave || savingObjects.entries.size < maxResultsPerSave) {
 			this.savingObjects = savingObjects;
 			this.waitSaving = true;
 			await delay(this.alternativePersistence!.maxSavingDelay);
 			this.waitSaving = false;
 			this.savingObjects = undefined;
 		}
-		this.persistKeys(savingObjects);
+		await this.persistKeys(savingObjects, undefined);
 	}
 
-	private async persistKeys(savingObjects: SavingObjects) {
+	private async persistKeys(
+		savingObjects: SavingObjects,
+		fixedId: string | undefined,
+	) {
 		if (!savingObjects.fulfilled) {
 			savingObjects.fulfilled = true;
-			const promises = this.generateSavingPromises(savingObjects);
+			const promises = this.generateSavingPromises(savingObjects, fixedId);
 			await Promise.all(promises);
 		}
 	}
 
-	private *generateSavingPromises(savingObjects: SavingObjects) {
+	private *generateSavingPromises(
+		savingObjects: SavingObjects,
+		fixedId: string | undefined,
+	) {
 		const ttlSavingObjects = new Map<
 			number,
 			[string, Record<string, unknown>, Map<string, number>]
@@ -254,7 +277,7 @@ export class RememberedRedis extends Remembered {
 		for (const [key, [ttl, value]] of savingObjects.entries.entries()) {
 			let ttlSaving = ttlSavingObjects.get(ttl);
 			if (!ttlSaving) {
-				ttlSaving = [v4(), {}, new Map()];
+				ttlSaving = [fixedId ?? v4(), {}, new Map()];
 				ttlSavingObjects.set(ttl, ttlSaving);
 			}
 			ttlSaving[1][key] = value;
@@ -293,7 +316,7 @@ export class RememberedRedis extends Remembered {
 		const value = (await this.serializer.serialize(savingObjects)) as
 			| string
 			| Buffer;
-		return await saving(value);
+		return saving(value);
 	}
 
 	async clearCache(key: string) {

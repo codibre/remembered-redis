@@ -38,6 +38,9 @@ module.exports = {
     '@typescript-eslint/no-unnecessary-type-assertion': 'error',
     '@typescript-eslint/no-unused-expressions': 'warn',
     '@typescript-eslint/no-use-before-define': 'error',
+		'no-return-await': 'off',
+		'@typescript-eslint/return-await': 'error',
+		'@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/quotes': [
       'error',
       'single',

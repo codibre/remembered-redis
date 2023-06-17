@@ -18,5 +18,5 @@ export function getSemaphoreConfig(config: RememberedRedisConfig): LockOptions {
 
 export interface RememberedSemaphore {
 	acquire(): Promise<void>;
-	release(): Promise<void>;
+	release(): void;
 }
