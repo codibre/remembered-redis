@@ -16,7 +16,7 @@ export interface AlternativePersistence {
 	 * Get the content for the informed key
 	 * @param key the key for the content
 	 */
-	get(key: string): Promise<Buffer | string | undefined>;
+	get(key: string, firstCheck: boolean): Promise<Buffer | string | undefined>;
 
 	maxSavingDelay?: number;
 	maxResultsPerSave?: number;

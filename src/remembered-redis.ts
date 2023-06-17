@@ -112,7 +112,7 @@ export class RememberedRedis extends Remembered {
 			await this.tryTo(semaphore.acquire.bind(semaphore));
 		}
 		try {
-			return await this.getFromCacheInternal(key);
+			return await this.getFromCacheInternal(key, false);
 		} finally {
 			if (!noSemaphore) {
 				this.tryTo(semaphore.release.bind(semaphore));
@@ -290,7 +290,7 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private async tryCache<T>(key: string, callback: () => PromiseLike<T>) {
-		const result = await this.getFromCacheInternal<T>(key);
+		const result = await this.getFromCacheInternal<T>(key, true);
 		if (result !== EMPTY) {
 			this.onCache?.(key);
 			return result;
@@ -300,6 +300,7 @@ export class RememberedRedis extends Remembered {
 
 	private async getFromCacheInternal<T>(
 		key: string,
+		firstCheck: boolean,
 	): Promise<T | typeof EMPTY> {
 		const redisKey = this.getRedisKey(key);
 		const cached = await this.try(redisKey, () =>
@@ -312,6 +313,7 @@ export class RememberedRedis extends Remembered {
 			) {
 				const alternativeCached = await this.alternativePersistence.get(
 					cached.toString(),
+					firstCheck,
 				);
 				if (alternativeCached) {
 					const deserialized = await this.serializer.deserialize(

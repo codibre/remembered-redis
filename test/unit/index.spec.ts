@@ -307,7 +307,7 @@ describe('index.ts', () => {
 
 			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
 			expect(acquire).toHaveCallsLike([semaphore]);
-			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key']);
+			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
 			expect(release).toHaveCallsLike([semaphore]);
 			expect(target['tryTo']).toHaveCallsLike(
 				['acquire result'],
@@ -321,7 +321,7 @@ describe('index.ts', () => {
 
 			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
 			expect(acquire).toHaveCallsLike([semaphore]);
-			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key']);
+			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
 			expect(release).toHaveCallsLike([semaphore]);
 			expect(target['tryTo']).toHaveCallsLike(
 				['acquire result'],
@@ -335,7 +335,7 @@ describe('index.ts', () => {
 
 			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
 			expect(acquire).toHaveCallsLike();
-			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key']);
+			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
 			expect(release).toHaveCallsLike();
 			expect(target['tryTo']).toHaveCallsLike();
 			expect(result).toBe('expected result');
