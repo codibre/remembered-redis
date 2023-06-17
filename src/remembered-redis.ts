@@ -207,7 +207,7 @@ export class RememberedRedis extends Remembered {
 			};
 		}
 		return new Mutex(
-			[redis],
+			redis,
 			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
 			{
 				...this.semaphoreConfig,
