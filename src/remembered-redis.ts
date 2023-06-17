@@ -6,7 +6,6 @@ import {
 	RememberedRedisConfig,
 	TryTo,
 	AlternativePersistence,
-	SemaphoreLib,
 } from './remembered-redis-config';
 import {
 	getSemaphoreConfig,
@@ -19,7 +18,6 @@ import { valueSerializer } from './value-serializer';
 import { promisify } from 'util';
 import clone from 'clone';
 import { getSafeRedis } from './get-safe-redis';
-import type RedLock from 'redlock';
 
 const delay = promisify(setTimeout);
 
@@ -29,7 +27,6 @@ export const DEFAULT_RETRY_INTERVAL = 100;
 export const DEFAULT_REFRESH_INTERVAL = 8000;
 export const EMPTY = Symbol('Empty');
 const resolved = Promise.resolve();
-let RedLockClass: typeof RedLock | undefined;
 
 interface SavingObjects {
 	fulfilled: boolean;
@@ -63,12 +60,8 @@ function prepareConfig(config: RememberedRedisConfig) {
 
 const MAX_ALTERNATIVE_KEY_SIZE = 50;
 const TTL_MAP_POS = 2;
-const DEFAULT_RETRY_COUNT = 1000;
-const DEFAULT_RETRY_DELAY = 100;
 
 export class RememberedRedis extends Remembered {
-	private static semaphoreLib: SemaphoreLib | undefined;
-	private static redLocksInstances = new Map<Redis, unknown>();
 	private semaphoreConfig: LockOptions;
 	private redisPrefix: string;
 	private redisTtl?: <T>(r: T) => number;
@@ -167,49 +160,37 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private getSemaphore(key: string): RememberedSemaphore {
-		if (!RememberedRedis.semaphoreLib) {
-			try {
-				RedLockClass = require('redlock').default;
-				RememberedRedis.semaphoreLib = SemaphoreLib.RedLock;
-			} catch {
-				RememberedRedis.semaphoreLib = SemaphoreLib.RedisSemaphore;
-			}
-		}
-		const { redis, semaphoreConfig } = this;
-		if (RedLockClass) {
-			let instance = RememberedRedis.redLocksInstances.get(redis) as
-				| RedLock
-				| undefined;
-			if (!instance) {
-				instance = new RedLockClass([redis], {
-					retryCount: DEFAULT_RETRY_COUNT,
-					retryDelay: DEFAULT_RETRY_DELAY,
-					retryJitter: Math.ceil(
-						semaphoreConfig.refreshInterval! / DEFAULT_RETRY_COUNT,
-					),
-					driftFactor: 0.01,
-				});
-				RememberedRedis.redLocksInstances.set(redis, instance);
-			}
-			let lock: ReturnType<typeof instance.acquire> extends Promise<infer R>
-				? R
-				: never;
-			return {
-				async acquire() {
-					lock = await instance!.acquire(
-						[key],
-						semaphoreConfig.acquireTimeout ?? DEFAULT_ACQUIRE_TIMEOUT,
-					);
-				},
-				async release() {
-					await lock?.release();
-				},
-			};
-		}
-		return new Mutex(redis, `${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`, {
+		const { redis } = this;
+		const config: LockOptions | undefined = {
 			...this.semaphoreConfig,
 			onLockLost: (err) => this.settings.onLockLost?.(key, err),
-		});
+		};
+		const mutex = new Mutex(
+			redis,
+			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
+			config,
+		);
+
+		if (this.settings.doubleLock === false) {
+			return mutex;
+		}
+
+		const doubleMutex = new Mutex(
+			redis,
+			`${this.redisPrefix}REMEMBERED-SEMAPHORE-DOUBLE:${key}`,
+			config,
+		);
+
+		return {
+			async acquire() {
+				await doubleMutex.acquire();
+				await mutex.acquire();
+				await doubleMutex.release();
+			},
+			release() {
+				return mutex.release();
+			},
+		};
 	}
 
 	async updateCache<T>(

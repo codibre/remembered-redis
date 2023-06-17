@@ -27,6 +27,7 @@ describe('index.ts', () => {
 				ttl: 1000,
 				redisTtl: 1000000,
 				redisPrefix: 'REMEMBERED',
+				doubleLock: true,
 			},
 			redis,
 		);

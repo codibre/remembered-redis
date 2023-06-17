@@ -17,6 +17,7 @@ describe('e2e: Non available Redis resilience', () => {
 				ttl: 900,
 				redisTtl: 100000,
 				redisTimeout: 100,
+				doubleLock: true,
 			},
 			redis,
 		);
@@ -33,13 +34,8 @@ describe('e2e: Non available Redis resilience', () => {
 			['my-key'],
 			['my-key'],
 			['my-key'],
-			['my-key'],
-			['my-key'],
 		);
-		expect(setex).toHaveCallsLike(
-			['my-key', 100000, expect.any(Buffer)],
-			['my-key', 100000, expect.any(Buffer)],
-		);
+		expect(setex).toHaveCallsLike(['my-key', 100000, expect.any(Buffer)]);
 		expect(result1).toBe(result2);
 		expect(result1).not.toBe(result3);
 	});
