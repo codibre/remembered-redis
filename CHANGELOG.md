@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/codibre/remembered-redis/compare/v1.8.2...v1.8.3) (2023-06-17)
+
+
+### Bug Fixes
+
+* creating promise for every delayed saving to await ([#30](https://github.com/codibre/remembered-redis/issues/30)) ([9115034](https://github.com/codibre/remembered-redis/commit/91150347fcbe42bdb035320dbb901a568ac44019))
+
 ## [1.8.2](https://github.com/codibre/remembered-redis/compare/v1.8.1...v1.8.2) (2023-06-17)
 
 
