@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/codibre/remembered-redis/compare/v1.7.0...v1.7.1) (2023-06-17)
+
+
+### Bug Fixes
+
+* fixing dependencies to avoid wrong dependency tree ([#24](https://github.com/codibre/remembered-redis/issues/24)) ([1e0c7fe](https://github.com/codibre/remembered-redis/commit/1e0c7fedc11b0c55bd50c082cf48fbe083df6dbb))
+
 # [1.7.0](https://github.com/codibre/remembered-redis/compare/v1.6.0...v1.7.0) (2023-06-17)
 
 
