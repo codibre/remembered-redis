@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/codibre/remembered-redis/compare/v1.7.2...v1.8.0) (2023-06-17)
+
+
+### Features
+
+* creating double lock option for lesser fails ([#27](https://github.com/codibre/remembered-redis/issues/27)) ([3c10ab2](https://github.com/codibre/remembered-redis/commit/3c10ab2602b645f39afbbf51f56205f220c64785))
+
 ## [1.7.2](https://github.com/codibre/remembered-redis/compare/v1.7.1...v1.7.2) (2023-06-17)
 
 
