@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/codibre/remembered-redis/compare/v1.8.1...v1.8.2) (2023-06-17)
+
+
+### Bug Fixes
+
+* indicating to alternative persistence whether it is trying to get before first semaphore ([#29](https://github.com/codibre/remembered-redis/issues/29)) ([f5c7c17](https://github.com/codibre/remembered-redis/commit/f5c7c179d95d639b84c74dc2e4640d4bca09a9ec))
+
 ## [1.8.1](https://github.com/codibre/remembered-redis/compare/v1.8.0...v1.8.1) (2023-06-17)
 
 
