@@ -8,7 +8,7 @@ const delay = promisify(setTimeout);
 const proto = RememberedRedis.prototype;
 
 describe('index.ts', () => {
-	let redis: Redis;
+	let redis: Redis.Redis;
 	let target: RememberedRedis;
 	let key: string;
 

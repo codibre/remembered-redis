@@ -206,14 +206,10 @@ export class RememberedRedis extends Remembered {
 				},
 			};
 		}
-		return new Mutex(
-			redis,
-			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
-			{
-				...this.semaphoreConfig,
-				onLockLost: (err) => this.settings.onLockLost?.(key, err),
-			},
-		);
+		return new Mutex(redis, `${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`, {
+			...this.semaphoreConfig,
+			onLockLost: (err) => this.settings.onLockLost?.(key, err),
+		});
 	}
 
 	async updateCache<T>(
