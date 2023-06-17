@@ -1,3 +1,11 @@
+## [1.7.2](https://github.com/codibre/remembered-redis/compare/v1.7.1...v1.7.2) (2023-06-17)
+
+
+### Bug Fixes
+
+* fixing Mutext instantiation ([#25](https://github.com/codibre/remembered-redis/issues/25)) ([d1a9bf0](https://github.com/codibre/remembered-redis/commit/d1a9bf0d13410084f6b6b53bd52988ae43048a86))
+* fixing tests ([#26](https://github.com/codibre/remembered-redis/issues/26)) ([5ef11f4](https://github.com/codibre/remembered-redis/commit/5ef11f4c2d3fd664c91c65b4a1118daf0131cdc2))
+
 ## [1.7.1](https://github.com/codibre/remembered-redis/compare/v1.7.0...v1.7.1) (2023-06-17)
 
 
