@@ -1,3 +1,10 @@
+## [1.8.4](https://github.com/codibre/remembered-redis/compare/v1.8.3...v1.8.4) (2023-06-17)
+
+
+### Bug Fixes
+
+* bettering lint and avoiding floating promises ([#31](https://github.com/codibre/remembered-redis/issues/31)) ([cd0577c](https://github.com/codibre/remembered-redis/commit/cd0577c3414b1243587a90c7fc32ea1cfa027551))
+
 ## [1.8.3](https://github.com/codibre/remembered-redis/compare/v1.8.2...v1.8.3) (2023-06-17)
 
 
