@@ -31,6 +31,7 @@ export interface RememberedRedisConfig extends RememberedConfig {
 	refreshInterval?: number;
 	noCompress?: boolean;
 	redisTimeout?: number;
+	doubleLock?: boolean;
 	logError?: LogError;
 	onCache?: (key: string) => void;
 	onError?: (key: string, err: Error) => any;
@@ -39,9 +40,4 @@ export interface RememberedRedisConfig extends RememberedConfig {
 	 * When informed, redis is used only for ttl control, but the real data is persisted using these methods
 	 */
 	alternativePersistence?: AlternativePersistence;
-}
-
-export enum SemaphoreLib {
-	RedLock = 'redlock',
-	RedisSemaphore = 'redis-semaphore',
 }
