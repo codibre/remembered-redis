@@ -1,8 +1,8 @@
 import { RememberedConfig, Ttl } from 'remembered';
 
 export type LogError = (message: string) => any;
-export type Action = () => PromiseLike<void>;
-export type TryTo = (action: Action) => PromiseLike<void>;
+export type Action<T> = () => PromiseLike<T>;
+export type TryTo = <T>(action: Action<T>) => Promise<T | undefined>;
 export interface AlternativePersistence {
 	/**
 	 * Saves the informed content
