@@ -310,13 +310,15 @@ describe('index.ts', () => {
 		});
 
 		it('should use custom semaphore when it set', async () => {
+      jest.spyOn(target, 'dontWait' as any).mockReturnValue('wrapped release');
 			target['settings'].semaphore = {
 				acquire: jest.fn().mockReturnValue('my release function'),
 			};
 
 			const result = await target['acquire'](key);
 
-			expect(result).toEqual('my release function');
+			expect(result()).toEqual('wrapped release');
+      expect(target['dontWait']).toHaveCallsLike(['my release function']);
 		});
 	});
 });

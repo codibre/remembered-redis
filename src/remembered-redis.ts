@@ -153,22 +153,24 @@ export class RememberedRedis extends Remembered {
 	}
 
 	private async acquire(key: string): Promise<() => void> {
+		let release: () => Promise<unknown>;
 		if (this.settings.semaphore) {
-			return this.settings.semaphore.acquire(key);
-		}
-		const { redis } = this;
-		const mutex = new Mutex(
-			redis,
-			`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
-			{
-				...this.semaphoreConfig,
-				onLockLost: (err) => this.settings.onLockLost?.(key, err),
-			},
-		);
-		const acquire = mutex.acquire.bind(mutex);
-		const release = mutex.release.bind(mutex);
+			release = await this.settings.semaphore.acquire(key);
+		} else {
+			const { redis } = this;
+			const mutex = new Mutex(
+				redis,
+				`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
+				{
+					...this.semaphoreConfig,
+					onLockLost: (err) => this.settings.onLockLost?.(key, err),
+				},
+			);
+			const acquire = mutex.acquire.bind(mutex);
+			release = mutex.release.bind(mutex);
 
-		await this.tryTo(acquire);
+			await this.tryTo(acquire);
+		}
 		return () => this.dontWait(release);
 	}
 

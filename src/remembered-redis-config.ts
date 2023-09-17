@@ -23,7 +23,7 @@ export interface AlternativePersistence {
 }
 
 export interface Semaphore {
-	acquire(key: string): Promise<() => Promise<void>>;
+	acquire(key: string): Promise<() => Promise<unknown>>;
 }
 
 export interface RememberedRedisConfig extends RememberedConfig {
