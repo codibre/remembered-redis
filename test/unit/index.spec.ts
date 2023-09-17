@@ -112,53 +112,6 @@ describe('index.ts', () => {
 		expect(await redis.getBuffer(target['getRedisKey'](key))).toBe(null);
 	});
 
-	it('should wait for semaphore acquisition, fill redis cache with callback result, and release semaphore when the semaphore is previously acquired and no result is found in redis', async () => {
-		const callback = jest.fn().mockResolvedValue('expected result');
-		const semaphore = target['getSemaphore'](key);
-		await semaphore.acquire();
-		async function release() {
-			await delay(100);
-			await semaphore.release();
-		}
-		async function checkCalls() {
-			await delay(50);
-			expect(callback).toHaveCallsLike();
-		}
-
-		const [result] = await Promise.all([
-			target.get(key, callback),
-			release(),
-			checkCalls(),
-		]);
-		await delay(10);
-
-		expect(callback).toHaveCallsLike([]);
-		expect(result).toBe('expected result');
-		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
-			await gzipValueSerializer.serialize('expected result'),
-		);
-	});
-
-	it('should wait for semaphore acquisition, get result from cache, and release semaphore when the semaphore is previously acquired and some result is found in redis', async () => {
-		const callback = jest.fn().mockResolvedValue('expected result');
-		const semaphore = target['getSemaphore'](key);
-		await semaphore.acquire();
-		async function release() {
-			await delay(100);
-			await redis.set(target['getRedisKey'](key), '"cached result"');
-			await semaphore.release();
-		}
-
-		const [result] = await Promise.all([target.get(key, callback), release()]);
-		await delay(10);
-
-		expect(callback).toHaveCallsLike();
-		expect(result).toBe('cached result');
-		expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
-			await gzipValueSerializer.serialize('cached result'),
-		);
-	});
-
 	it('should return info from cache even if it is not gzipped', async () => {
 		const callback = jest.fn().mockResolvedValue('expected result');
 		await redis.set(target['getRedisKey'](key), '"cached result"');
@@ -197,17 +150,13 @@ describe('index.ts', () => {
 	describe(proto.runAndCache.name, () => {
 		let callback: jest.SpyInstance;
 		let noCacheIf: jest.SpyInstance | undefined;
-		let acquire: jest.SpyInstance;
 		let release: jest.SpyInstance;
-		let semaphore: any;
 
 		beforeEach(() => {
 			callback = jest.fn().mockResolvedValue('expected value');
-			acquire = jest.fn().mockReturnValue('acquire result');
 			release = jest.fn().mockReturnValue('release result');
 			jest.spyOn(target, 'updateCache').mockResolvedValue(undefined);
-			semaphore = { acquire, release };
-			jest.spyOn(target, 'getSemaphore' as any).mockReturnValue(semaphore);
+			jest.spyOn(target, 'acquire' as any).mockReturnValue(release);
 			jest.spyOn(target, 'tryTo' as any).mockResolvedValue(undefined);
 			jest.spyOn(target, 'dontWait' as any).mockReturnValue(undefined);
 		});
@@ -221,8 +170,7 @@ describe('index.ts', () => {
 			);
 
 			expect(result).toBe('expected value');
-			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
-			expect(acquire).toHaveCallsLike([]);
+			expect(target['acquire']).toHaveCallsLike(['my-key']);
 			expect(callback).toHaveCallsLike([]);
 			expect(target.updateCache).toHaveCallsLike([
 				'my-key',
@@ -243,8 +191,7 @@ describe('index.ts', () => {
 			);
 
 			expect(result).toBe('expected value');
-			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
-			expect(acquire).toHaveCallsLike([]);
+			expect(target['acquire']).toHaveCallsLike(['my-key']);
 			expect(callback).toHaveCallsLike([]);
 			expect(noCacheIf).toHaveCallsLike(['expected value']);
 			expect(target.updateCache).toHaveCallsLike([
@@ -266,8 +213,7 @@ describe('index.ts', () => {
 			);
 
 			expect(result).toBe('expected value');
-			expect(target['getSemaphore']).toHaveCallsLike(['my-key']);
-			expect(acquire).toHaveCallsLike([]);
+			expect(target['acquire']).toHaveCallsLike(['my-key']);
 			expect(callback).toHaveCallsLike([]);
 			expect(noCacheIf).toHaveCallsLike(['expected value']);
 			expect(target.updateCache).toHaveCallsLike();
@@ -276,15 +222,11 @@ describe('index.ts', () => {
 	});
 
 	describe(proto.getFromCache.name, () => {
-		let acquire: jest.SpyInstance;
 		let release: jest.SpyInstance;
-		let semaphore: any;
 
 		beforeEach(() => {
-			acquire = jest.fn().mockReturnValue('acquire result');
 			release = jest.fn().mockReturnValue('release result');
-			semaphore = { acquire, release };
-			jest.spyOn(target, 'getSemaphore' as any).mockReturnValue(semaphore);
+			jest.spyOn(target, 'acquire' as any).mockReturnValue(release);
 			jest
 				.spyOn(target, 'getFromCacheInternal' as any)
 				.mockResolvedValue('expected result');
@@ -293,8 +235,7 @@ describe('index.ts', () => {
 		it('should acquire semaphore when noSemaphore is not informed', async () => {
 			const result = await target.getFromCache('my key');
 
-			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
-			expect(acquire).toHaveCallsLike([]);
+			expect(target['acquire']).toHaveCallsLike(['my key']);
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
 			expect(release).toHaveCallsLike([]);
 			expect(result).toBe('expected result');
@@ -303,8 +244,7 @@ describe('index.ts', () => {
 		it('should acquire semaphore when noSemaphore is false', async () => {
 			const result = await target.getFromCache('my key', false);
 
-			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
-			expect(acquire).toHaveCallsLike([]);
+			expect(target['acquire']).toHaveCallsLike(['my key']);
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
 			expect(release).toHaveCallsLike([]);
 			expect(result).toBe('expected result');
@@ -313,11 +253,70 @@ describe('index.ts', () => {
 		it('should not acquire semaphore when noSemaphore is true', async () => {
 			const result = await target.getFromCache('my key', true);
 
-			expect(target['getSemaphore']).toHaveCallsLike(['my key']);
-			expect(acquire).toHaveCallsLike();
+			expect(target['acquire']).toHaveCallsLike();
 			expect(target['getFromCacheInternal']).toHaveCallsLike(['my key', false]);
 			expect(release).toHaveCallsLike();
 			expect(result).toBe('expected result');
+		});
+	});
+
+	describe(proto['acquire'].name, () => {
+		it('should wait for semaphore acquisition, fill redis cache with callback result, and release semaphore when the semaphore is previously acquired and no result is found in redis', async () => {
+			const callback = jest.fn().mockResolvedValue('expected result');
+			const releaseSemaphore = await target['acquire'](key);
+			async function release() {
+				await delay(100);
+				releaseSemaphore();
+			}
+			async function checkCalls() {
+				await delay(50);
+				expect(callback).toHaveCallsLike();
+			}
+
+			const [result] = await Promise.all([
+				target.get(key, callback),
+				release(),
+				checkCalls(),
+			]);
+			await delay(10);
+
+			expect(callback).toHaveCallsLike([]);
+			expect(result).toBe('expected result');
+			expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
+				await gzipValueSerializer.serialize('expected result'),
+			);
+		});
+
+		it('should wait for semaphore acquisition, get result from cache, and release semaphore when the semaphore is previously acquired and some result is found in redis', async () => {
+			const callback = jest.fn().mockResolvedValue('expected result');
+			const releaseSemaphore = await target['acquire'](key);
+			async function release() {
+				await delay(100);
+				await redis.set(target['getRedisKey'](key), '"cached result"');
+				releaseSemaphore();
+			}
+
+			const [result] = await Promise.all([
+				target.get(key, callback),
+				release(),
+			]);
+			await delay(10);
+
+			expect(callback).toHaveCallsLike();
+			expect(result).toBe('cached result');
+			expect(await redis.getBuffer(target['getRedisKey'](key))).toEqual(
+				await gzipValueSerializer.serialize('cached result'),
+			);
+		});
+
+		it('should use custom semaphore when it set', async () => {
+			target['settings'].semaphore = {
+				acquire: jest.fn().mockReturnValue('my release function'),
+			};
+
+			const result = await target['acquire'](key);
+
+			expect(result).toEqual('my release function');
 		});
 	});
 });

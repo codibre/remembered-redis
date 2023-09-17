@@ -7,10 +7,7 @@ import {
 	TryTo,
 	AlternativePersistence,
 } from './remembered-redis-config';
-import {
-	getSemaphoreConfig,
-	RememberedSemaphore,
-} from './get-semaphore-config';
+import { getSemaphoreConfig } from './get-semaphore-config';
 import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
 import { gzipValueSerializer } from './gzip-value-serializer';
@@ -110,16 +107,11 @@ export class RememberedRedis extends Remembered {
 		key: string,
 		noSemaphore = false,
 	): Promise<T | typeof EMPTY> {
-		const semaphore = this.getSemaphore(key);
-		if (!noSemaphore) {
-			await semaphore.acquire();
-		}
+		const release = noSemaphore ? undefined : await this.acquire(key);
 		try {
 			return await this.getFromCacheInternal(key, false);
 		} finally {
-			if (!noSemaphore) {
-				semaphore.release();
-			}
+			release?.();
 		}
 	}
 
@@ -129,8 +121,7 @@ export class RememberedRedis extends Remembered {
 		noCacheIf?: ((result: T) => boolean) | undefined,
 		ttl?: number,
 	): Promise<T> {
-		const semaphore = this.getSemaphore(key);
-		await semaphore.acquire();
+		const release = await this.acquire(key);
 		try {
 			const result = await callback();
 			if (result !== undefined && !noCacheIf?.(result)) {
@@ -138,7 +129,7 @@ export class RememberedRedis extends Remembered {
 			}
 			return result;
 		} finally {
-			semaphore.release();
+			release();
 		}
 	}
 
@@ -148,8 +139,7 @@ export class RememberedRedis extends Remembered {
 		noCacheIf?: (t: T) => boolean,
 		ttl?: number,
 	) {
-		const semaphore = this.getSemaphore(key);
-		await semaphore.acquire();
+		const release = await this.acquire(key);
 		let saveCache = resolved;
 		try {
 			const result = await this.tryCache(key, callback);
@@ -158,11 +148,14 @@ export class RememberedRedis extends Remembered {
 			}
 			return result;
 		} finally {
-			this.dontWait(() => saveCache.then(semaphore.release.bind(semaphore)));
+			this.dontWait(() => saveCache.then(release));
 		}
 	}
 
-	private getSemaphore(key: string): RememberedSemaphore {
+	private async acquire(key: string): Promise<() => void> {
+		if (this.settings.semaphore) {
+			return this.settings.semaphore.acquire(key);
+		}
 		const { redis } = this;
 		const mutex = new Mutex(
 			redis,
@@ -175,10 +168,8 @@ export class RememberedRedis extends Remembered {
 		const acquire = mutex.acquire.bind(mutex);
 		const release = mutex.release.bind(mutex);
 
-		return {
-			acquire: () => this.tryTo(acquire),
-			release: () => this.dontWait(release),
-		};
+		await this.tryTo(acquire);
+		return () => this.dontWait(release);
 	}
 
 	async updateCache<T>(
