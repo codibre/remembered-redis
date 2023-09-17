@@ -266,7 +266,7 @@ describe('index.ts', () => {
 			const releaseSemaphore = await target['acquire'](key);
 			async function release() {
 				await delay(100);
-				releaseSemaphore();
+				releaseSemaphore!();
 			}
 			async function checkCalls() {
 				await delay(50);
@@ -293,7 +293,7 @@ describe('index.ts', () => {
 			async function release() {
 				await delay(100);
 				await redis.set(target['getRedisKey'](key), '"cached result"');
-				releaseSemaphore();
+				releaseSemaphore!();
 			}
 
 			const [result] = await Promise.all([
@@ -310,15 +310,27 @@ describe('index.ts', () => {
 		});
 
 		it('should use custom semaphore when it set', async () => {
-      jest.spyOn(target, 'dontWait' as any).mockReturnValue('wrapped release');
+			jest.spyOn(target, 'dontWait' as any).mockReturnValue('wrapped release');
 			target['settings'].semaphore = {
 				acquire: jest.fn().mockReturnValue('my release function'),
 			};
 
 			const result = await target['acquire'](key);
 
-			expect(result()).toEqual('wrapped release');
-      expect(target['dontWait']).toHaveCallsLike(['my release function']);
+			expect(result!()).toEqual('wrapped release');
+			expect(target['dontWait']).toHaveCallsLike(['my release function']);
+		});
+
+		it('should return undefined when custom semaphore fails', async () => {
+			jest.spyOn(target, 'dontWait' as any).mockReturnValue('wrapped release');
+			target['settings'].semaphore = {
+				acquire: jest.fn().mockRejectedValue('any error'),
+			};
+
+			const result = await target['acquire'](key);
+
+			expect(result).toBeUndefined();
+			expect(target['dontWait']).toHaveCallsLike();
 		});
 	});
 });

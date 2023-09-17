@@ -129,7 +129,7 @@ export class RememberedRedis extends Remembered {
 			}
 			return result;
 		} finally {
-			release();
+			release?.();
 		}
 	}
 
@@ -152,10 +152,11 @@ export class RememberedRedis extends Remembered {
 		}
 	}
 
-	private async acquire(key: string): Promise<() => void> {
-		let release: () => Promise<unknown>;
-		if (this.settings.semaphore) {
-			release = await this.settings.semaphore.acquire(key);
+	private async acquire(key: string): Promise<undefined | (() => void)> {
+		let release: undefined | (() => Promise<unknown>);
+		const { semaphore } = this.settings;
+		if (semaphore) {
+			release = await this.tryTo(() => semaphore.acquire(key));
 		} else {
 			const { redis } = this;
 			const mutex = new Mutex(
@@ -171,7 +172,13 @@ export class RememberedRedis extends Remembered {
 
 			await this.tryTo(acquire);
 		}
-		return () => this.dontWait(release);
+		return this.prepareRelease(release);
+	}
+
+	private prepareRelease(
+		release: (() => Promise<unknown>) | undefined,
+	): (() => void) | PromiseLike<() => void> | undefined {
+		return release ? () => this.dontWait(release) : undefined;
 	}
 
 	async updateCache<T>(
