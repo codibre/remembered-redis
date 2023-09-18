@@ -22,6 +22,10 @@ export interface AlternativePersistence {
 	maxResultsPerSave?: number;
 }
 
+export interface Semaphore {
+	acquire(key: string): Promise<() => Promise<unknown>>;
+}
+
 export interface RememberedRedisConfig extends RememberedConfig {
 	redisTtl?: Ttl;
 	redisPrefix?: string;
@@ -39,4 +43,5 @@ export interface RememberedRedisConfig extends RememberedConfig {
 	 * When informed, redis is used only for ttl control, but the real data is persisted using these methods
 	 */
 	alternativePersistence?: AlternativePersistence;
+	semaphore?: Semaphore;
 }
