@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/codibre/remembered-redis/compare/v1.8.4...v1.9.0) (2023-09-18)
+
+
+### Features
+
+* implementing external semaphore support ([#32](https://github.com/codibre/remembered-redis/issues/32)) ([3774131](https://github.com/codibre/remembered-redis/commit/37741319c785909bb9c0db4480148ef9fdf1cf9b))
+
 ## [1.8.4](https://github.com/codibre/remembered-redis/compare/v1.8.3...v1.8.4) (2023-06-17)
 
 
