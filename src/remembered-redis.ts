@@ -148,7 +148,9 @@ export class RememberedRedis extends Remembered {
 			}
 			return result;
 		} finally {
-			this.dontWait(() => saveCache.then(release));
+			if (release) {
+				this.dontWait(() => saveCache.then(() => release()));
+			}
 		}
 	}
 
