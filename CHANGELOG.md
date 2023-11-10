@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/codibre/remembered-redis/compare/v1.9.1...v1.10.0) (2023-11-10)
+
+
+### Features
+
+* accepting redis-like cache ([37b12a7](https://github.com/codibre/remembered-redis/commit/37b12a70501a746f231e8e002a3e1079dacd77cf))
+
 ## [1.9.1](https://github.com/codibre/remembered-redis/compare/v1.9.0...v1.9.1) (2023-11-10)
 
 
