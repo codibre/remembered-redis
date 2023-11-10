@@ -6,6 +6,7 @@ import {
 	DEFAULT_RETRY_INTERVAL,
 	DEFAULT_REFRESH_INTERVAL,
 } from './remembered-redis';
+import Redis from 'ioredis';
 
 export function getSemaphoreConfig(config: RememberedRedisConfig): LockOptions {
 	return {
@@ -20,3 +21,6 @@ export interface RememberedSemaphore {
 	acquire(): Promise<void>;
 	release(): void;
 }
+
+export type RequiredField<Type, Field extends keyof Type> = Omit<Type, Field> & Required<Pick<Type, Field>>;
+export type RedisLike = Pick<Redis, 'getBuffer' | 'setex' | 'del'>;

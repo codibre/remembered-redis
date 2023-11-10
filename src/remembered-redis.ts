@@ -7,7 +7,7 @@ import {
 	TryTo,
 	AlternativePersistence,
 } from './remembered-redis-config';
-import { getSemaphoreConfig } from './get-semaphore-config';
+import { getSemaphoreConfig, RedisLike, RequiredField } from './get-semaphore-config';
 import { getRedisPrefix } from './get-redis-prefix';
 import { tryToFactory } from './try-to-factory';
 import { gzipValueSerializer } from './gzip-value-serializer';
@@ -71,11 +71,23 @@ export class RememberedRedis extends Remembered {
 	private savingObjects?: SavingObjects;
 	private waitSaving = false;
 	private savingPromise?: Promise<unknown>;
-	private readonly redis: Redis;
+	private readonly redis: RedisLike;
 
+  constructor(
+		settings: RequiredField<RememberedRedisConfig, 'semaphore'>,
+		redis: RedisLike,
+	);
+  constructor(
+		settings: Omit<RememberedRedisConfig, 'semaphore'>,
+		redis: Redis,
+	);
+  constructor(
+		settings: RememberedRedisConfig,
+		redis: Redis,
+	);
 	constructor(
 		private settings: RememberedRedisConfig,
-		redis: Redis,
+		redis: RedisLike,
 	) {
 		super(prepareConfig(settings));
 		this.redisTtl =

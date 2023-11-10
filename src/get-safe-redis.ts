@@ -1,14 +1,14 @@
 import { v4 } from 'uuid';
-import { Redis } from 'ioredis';
 import CircuitBreaker = require('opossum');
 import { raceFactory } from './race-factory';
+import { RedisLike } from './get-semaphore-config';
 
 type UsedRedisMethods = 'getBuffer' | 'setex' | 'del';
 const usedRedisMethods: UsedRedisMethods[] = ['getBuffer', 'setex', 'del'];
 
 function getSafeMethodFactory(
 	timeout: number,
-	source: Redis,
+	source: RedisLike,
 	breakerOptions: CircuitBreaker.Options,
 ) {
 	return (method: UsedRedisMethods) => {
@@ -23,10 +23,10 @@ function getSafeMethodFactory(
 }
 
 export function getSafeRedis(
-	source: Redis,
+	source: RedisLike,
 	onError?: (key: string, err: Error) => any,
 	timeout?: number,
-): Redis {
+): RedisLike {
 	if (timeout) {
 		try {
 			const breakerOptions: CircuitBreaker.Options = {
