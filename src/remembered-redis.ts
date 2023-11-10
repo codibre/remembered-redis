@@ -15,7 +15,7 @@ import { promisify } from 'util';
 import clone from 'clone';
 import { getSafeRedis } from './get-safe-redis';
 import { dontWaitFactory } from './dont-wait';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 
 const delay = promisify(setTimeout);
 
