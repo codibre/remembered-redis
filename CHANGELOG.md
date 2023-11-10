@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/codibre/remembered-redis/compare/v1.9.0...v1.9.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* fixing vulnerabilities and validating lib with latest opossum ([72442c0](https://github.com/codibre/remembered-redis/commit/72442c0a50cafb3a3973eb08aba9f3ccad763be0))
+
 # [1.9.0](https://github.com/codibre/remembered-redis/compare/v1.8.4...v1.9.0) (2023-09-18)
 
 
