@@ -73,7 +73,10 @@ export class RememberedRedis extends Remembered {
 	private savingPromise?: Promise<unknown>;
 	private readonly redis: Redis;
 
-	constructor(private settings: RememberedRedisConfig, redis: Redis) {
+	constructor(
+		private settings: RememberedRedisConfig,
+		redis: Redis,
+	) {
 		super(prepareConfig(settings));
 		this.redisTtl =
 			typeof settings.redisTtl === 'number'
@@ -352,9 +355,8 @@ export class RememberedRedis extends Remembered {
 					firstCheck,
 				);
 				if (alternativeCached) {
-					const deserialized = await this.serializer.deserialize(
-						alternativeCached,
-					);
+					const deserialized =
+						await this.serializer.deserialize(alternativeCached);
 					return deserialized.hasOwnProperty(redisKey)
 						? deserialized[redisKey]
 						: EMPTY;
