@@ -1,4 +1,4 @@
-import { Redis } from 'ioredis';
+import Redis from 'ioredis';
 import { RememberedRedis } from '../../src';
 import { promisify } from 'util';
 import { v4 } from 'uuid';
