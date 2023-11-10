@@ -6,7 +6,7 @@ import {
 	DEFAULT_RETRY_INTERVAL,
 	DEFAULT_REFRESH_INTERVAL,
 } from './remembered-redis';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 
 export function getSemaphoreConfig(config: RememberedRedisConfig): LockOptions {
 	return {
