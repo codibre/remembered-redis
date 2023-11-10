@@ -1,6 +1,6 @@
 import { promisify } from 'util';
 import { RememberedRedis } from '../../src/remembered-redis';
-import Redis = require('ioredis');
+import Redis from 'ioredis';
 
 const delay = promisify(setTimeout);
 

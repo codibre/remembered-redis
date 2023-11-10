@@ -1,6 +1,5 @@
 import { v4 } from 'uuid';
 import { Remembered } from 'remembered';
-import { Redis } from 'ioredis';
 import { LockOptions, Mutex } from 'redis-semaphore';
 import {
 	RememberedRedisConfig,
@@ -16,6 +15,7 @@ import { promisify } from 'util';
 import clone from 'clone';
 import { getSafeRedis } from './get-safe-redis';
 import { dontWaitFactory } from './dont-wait';
+import Redis from 'ioredis';
 
 const delay = promisify(setTimeout);
 
@@ -177,7 +177,7 @@ export class RememberedRedis extends Remembered {
 		} else {
 			const { redis } = this;
 			const mutex = new Mutex(
-				redis,
+				redis as Redis,
 				`${this.redisPrefix}REMEMBERED-SEMAPHORE:${key}`,
 				{
 					...this.semaphoreConfig,
