@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/codibre/remembered-redis/compare/v1.10.0...v1.10.1) (2023-11-13)
+
+
+### Bug Fixes
+
+* bypassing semaphore error when ioredis throwns ConnectionTimeout ([#33](https://github.com/codibre/remembered-redis/issues/33)) ([9d5f215](https://github.com/codibre/remembered-redis/commit/9d5f215d0489bcfbd673ec72b64e3b06ca6266b9))
+
 # [1.10.0](https://github.com/codibre/remembered-redis/compare/v1.9.1...v1.10.0) (2023-11-10)
 
 
