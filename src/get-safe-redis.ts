@@ -1,7 +1,5 @@
-import { v4 } from 'uuid';
-import CircuitBreaker = require('opossum');
-import { raceFactory } from './race-factory';
-import { RedisLike, RedisMutexReadyLike } from './get-semaphore-config';
+import { RedisLike } from './get-semaphore-config';
+import { getSafeInstance } from 'get-safe-instance';
 
 type UsedRedisMethods = 'getBuffer' | 'setex' | 'del' | 'eval' | 'evalsha';
 const usedRedisMethods: UsedRedisMethods[] = [
@@ -12,59 +10,19 @@ const usedRedisMethods: UsedRedisMethods[] = [
 	'evalsha',
 ];
 
-function getSafeMethodFactory(
-	timeout: number,
-	source: RedisLike,
-	breakerOptions: CircuitBreaker.Options,
-) {
-	return (method: UsedRedisMethods) => {
-		if (!(method in source)) return;
-		const CircuitBreakerCls = require('opossum') as typeof CircuitBreaker;
-		const getBufferCb = new CircuitBreakerCls(
-			raceFactory(
-				timeout,
-				(source as RedisMutexReadyLike)[method].bind(source),
-			),
-			breakerOptions,
-		);
-		const safeMethod = getBufferCb.fire.bind(getBufferCb);
-		return [method, safeMethod] as [UsedRedisMethods, Function];
-	};
-}
-
 export function getSafeRedis(
 	source: RedisLike,
 	onError?: (key: string, err: Error) => any,
 	timeout?: number,
 ): RedisLike {
-	if (timeout) {
-		try {
-			const breakerOptions: CircuitBreaker.Options = {
+	return timeout
+		? getSafeInstance(
+				source,
 				timeout,
-				volumeThreshold: 30,
-				group: v4(),
-			};
-			const map = new Map<UsedRedisMethods, Function>(
-				usedRedisMethods
-					.map(getSafeMethodFactory(timeout, source, breakerOptions))
-					.filter((x): x is [UsedRedisMethods, Function] => !!x),
-			);
-			return new Proxy(source as RedisMutexReadyLike, {
-				get(target, p: UsedRedisMethods) {
-					const func = map.get(p);
-					if (func) {
-						return func;
-					}
-					const value = target[p];
-					return typeof value === 'function'
-						? (value as any).bind(target)
-						: value;
-				},
-			});
-		} catch (err) {
-			onError?.('*', err as Error);
-		}
-	}
-
-	return source;
+				usedRedisMethods.filter(
+					(method): method is keyof RedisLike => method in source,
+				),
+				(key, _, err) => onError?.(key, err),
+		  )
+		: source;
 }

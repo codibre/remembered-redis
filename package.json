@@ -71,8 +71,8 @@
   "keywords": [],
   "license": "MIT",
   "peerDependencies": {
-    "opossum": ">=4.2.4",
-    "ioredis": "*"
+    "ioredis": "*",
+    "opossum": ">=4.2.4"
   },
   "peerDependenciesMeta": {
     "opossum": {
@@ -111,8 +111,9 @@
   },
   "dependencies": {
     "clone": "^2.1.2",
+    "get-safe-instance": "*",
     "multi-serializer": "*",
     "redis-semaphore": "*",
-    "remembered": "^0.9.2"
+    "remembered": "*"
   }
 }
