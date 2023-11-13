@@ -1,3 +1,10 @@
+## [1.10.2](https://github.com/codibre/remembered-redis/compare/v1.10.1...v1.10.2) (2023-11-13)
+
+
+### Bug Fixes
+
+* using get-safe-instance ([#34](https://github.com/codibre/remembered-redis/issues/34)) ([9b958fd](https://github.com/codibre/remembered-redis/commit/9b958fd4f68ab872bb3af6b4da8956fa55c9e9a2))
+
 ## [1.10.1](https://github.com/codibre/remembered-redis/compare/v1.10.0...v1.10.1) (2023-11-13)
 
 
