@@ -1,10 +1,10 @@
 import { v4 } from 'uuid';
 import CircuitBreaker = require('opossum');
 import { raceFactory } from './race-factory';
-import { RedisLike } from './get-semaphore-config';
+import { RedisLike, RedisMutexReadyLike } from './get-semaphore-config';
 
-type UsedRedisMethods = 'getBuffer' | 'setex' | 'del';
-const usedRedisMethods: UsedRedisMethods[] = ['getBuffer', 'setex', 'del'];
+type UsedRedisMethods = 'getBuffer' | 'setex' | 'del' | 'eval' | 'evalsha';
+const usedRedisMethods: UsedRedisMethods[] = ['getBuffer', 'setex', 'del', 'eval', 'evalsha'];
 
 function getSafeMethodFactory(
 	timeout: number,
@@ -14,7 +14,7 @@ function getSafeMethodFactory(
 	return (method: UsedRedisMethods) => {
 		const CircuitBreakerCls = require('opossum') as typeof CircuitBreaker;
 		const getBufferCb = new CircuitBreakerCls(
-			raceFactory(timeout, source[method].bind(source)),
+			raceFactory(timeout, (source as RedisMutexReadyLike)[method].bind(source)),
 			breakerOptions,
 		);
 		const safeMethod = getBufferCb.fire.bind(getBufferCb);
@@ -39,7 +39,7 @@ export function getSafeRedis(
 					getSafeMethodFactory(timeout, source, breakerOptions),
 				),
 			);
-			return new Proxy(source, {
+			return new Proxy(source as RedisMutexReadyLike, {
 				get(target, p: UsedRedisMethods) {
 					const func = map.get(p);
 					if (func) {
