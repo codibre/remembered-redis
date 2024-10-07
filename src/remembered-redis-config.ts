@@ -8,7 +8,7 @@ export interface AlternativePersistence {
 	 * Saves the informed content
 	 * @param key the key for the content
 	 * @param content the content to be saved
-	 * @param ttl the ttl redis will maintain the reference for this key, in seconds
+	 * @param ttl the expiration time, in seconds, that Redis will use to maintain the reference for this key
 	 */
 	save(key: string, content: string | Buffer, ttl: number): Promise<void>;
 
@@ -17,6 +17,16 @@ export interface AlternativePersistence {
 	 * @param key the key for the content
 	 */
 	get(key: string, firstCheck: boolean): Promise<Buffer | string | undefined>;
+
+	/**
+	 * If defined and returns true, the alternative persistence is applied; otherwise it is not.
+	 * @param content the content to be saved
+	 * @param ttl the expiration time, in seconds, that Redis will use to maintain the reference for this key
+	 */
+	shouldUseAlternativePersistence?: (
+		content: unknown,
+		ttl: number,
+	) => boolean;
 
 	maxSavingDelay?: number;
 	maxResultsPerSave?: number;
