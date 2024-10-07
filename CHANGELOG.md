@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/codibre/remembered-redis/compare/v1.10.2...v1.11.0) (2024-10-07)
+
+
+### Features
+
+* (AlternativePersistence) add shouldUseAlternativePersistence function, to define if the alternative persistence could be ignored ([3a55148](https://github.com/codibre/remembered-redis/commit/3a55148278465e9d22f9ff54a0ca11b29229edc7))
+
 ## [1.10.2](https://github.com/codibre/remembered-redis/compare/v1.10.1...v1.10.2) (2023-11-13)
 
 
