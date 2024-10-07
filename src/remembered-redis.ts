@@ -207,12 +207,11 @@ export class RememberedRedis extends Remembered {
 			const resultCopy: T = clone(result);
 			if (
 				this.alternativePersistence &&
-				(this.alternativePersistence.shouldUseAlternativePersistence
-					? this.alternativePersistence.shouldUseAlternativePersistence(
-							resultCopy,
-							realTtl,
-					  )
-					: true)
+				(!this.alternativePersistence.shouldUseAlternativePersistence ||
+					this.alternativePersistence.shouldUseAlternativePersistence(
+						resultCopy,
+						realTtl,
+					))
 			) {
 				if (!this.alternativePersistence.maxSavingDelay) {
 					await this.persistKeys(

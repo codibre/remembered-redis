@@ -23,10 +23,7 @@ export interface AlternativePersistence {
 	 * @param content the content to be saved
 	 * @param ttl the expiration time, in seconds, that Redis will use to maintain the reference for this key
 	 */
-	shouldUseAlternativePersistence?: (
-		content: unknown,
-		ttl: number,
-	) => boolean;
+	shouldUseAlternativePersistence?: (content: unknown, ttl: number) => boolean;
 
 	maxSavingDelay?: number;
 	maxResultsPerSave?: number;
