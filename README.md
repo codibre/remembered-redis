@@ -132,6 +132,8 @@ export class RedisCache implements AlternativePersistence {
 
 This may not seem reasonable, but, as you join many results into one can when maxSavingDelay > 0, you can favor the compression with this, and save a lot of memory in your instance.
 
+There is also the option to dynamically decide whether to use alternative persistence or Redis as the storage. Simply define the **shouldUseAlternativePersistence** function, and whenever it returns false, the alternative persistence is ignored. A common use case is when your application manages data with different lifetime: Redis can handle data with short expiration times, while the alternative persistence stores longer-lived data, optimizing storage costs.
+
 ## License
 
 Licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License).
