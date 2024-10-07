@@ -64,14 +64,14 @@ const MAX_ALTERNATIVE_KEY_SIZE = 50;
 const TTL_MAP_POS = 2;
 
 export class RememberedRedis extends Remembered {
-	private semaphoreConfig: LockOptions;
-	private redisPrefix: string;
-	private redisTtl?: <T>(r: T) => number;
-	private tryTo: TryTo;
-	private dontWait: ReturnType<typeof dontWaitFactory>;
-	private onCache?: (key: string) => void;
-	private onError?: (key: string, err: Error) => any;
-	private alternativePersistence?: AlternativePersistence;
+	private readonly semaphoreConfig: LockOptions;
+	private readonly redisPrefix: string;
+	private readonly redisTtl?: <T>(r: T) => number;
+	private readonly tryTo: TryTo;
+	private readonly dontWait: ReturnType<typeof dontWaitFactory>;
+	private readonly onCache?: (key: string) => void;
+	private readonly onError?: (key: string, err: Error) => any;
+	private readonly alternativePersistence?: AlternativePersistence;
 	private savingObjects?: SavingObjects;
 	private waitSaving = false;
 	private savingPromise?: Promise<unknown>;
