@@ -1,9 +1,8 @@
-name: test-e2e
+# This is a basic workflow to help you get started with Actions
 
+name: test
 on:
   pull_request:
-    branches: [master, develop]
-  push:
     branches: [master, develop]
 
 jobs:
@@ -11,18 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [26.x]
+        node-version: [16.x]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
-      - name: Install dependencies
+      - name: install
         run: npm ci
       - name: Redis Server in GitHub Actions
-        uses: supercharge/redis-github-action@v1.8.1
-      - name: Run e2e tests
+        uses: supercharge/redis-github-action@1.1.0
+      - name: 'Test'
         run: npm run test:e2e

@@ -1,23 +1,18 @@
-name: lint
+# This is a basic workflow to help you get started with Actions
 
+name: lint
 on:
   pull_request:
-    branches: [master]
-  push:
     branches: [master]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v2
       - name: Use Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: "26.x"
-          cache: npm
-      - name: Install dependencies
+        uses: actions/setup-node@v3
+      - name: install
         run: npm ci
       - name: Lint
         run: npm run lint
