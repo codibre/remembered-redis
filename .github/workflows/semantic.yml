@@ -1,4 +1,4 @@
-name: semantic-release
+name: release
 
 on:
   push:
@@ -41,11 +41,14 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Install release-it for CI
+        run: npm install -g release-it@21.0.2 @release-it/conventional-changelog@12.0.0
+
       - name: Get OIDC Token
         id: oidc
         run: |
           IDENTITY_TOKEN=$(curl -sL "${ACTIONS_ID_TOKEN_REQUEST_URL}?audience=https://registry.npmjs.org" \
-            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN}" | jq -r '.value')
           NPM_TOKEN=$(curl -s -X POST \
             -H "Content-Type: application/json" \
             -d "{\"token\": \"${IDENTITY_TOKEN}\"}" \
@@ -58,7 +61,10 @@ jobs:
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "always-auth=true" >> ~/.npmrc
 
-      - name: Semantic Release
+      - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release --ci
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          release-it --ci
